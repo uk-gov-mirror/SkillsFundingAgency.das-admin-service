@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using SFA.DAS.AssessorService.Application.Api.Client.Clients;
-using SFA.DAS.RoatpAssessor.Services;
+using SFA.DAS.RoatpAssessor.Services.ApplyApi;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

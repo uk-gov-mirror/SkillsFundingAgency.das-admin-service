@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SFA.DAS.RoatpAssessor.Services
+namespace SFA.DAS.RoatpAssessor.Services.ApplyApi
 {
     public interface IApplyApiClient
     {
@@ -17,6 +17,6 @@ namespace SFA.DAS.RoatpAssessor.Services
         Task<IEnumerable<ApplicationReview>> GetActiveApplicationReviewsAsync();
         Task UpdateAssessorComments(Guid applicationId, AssessorReviewNo reviewNo, Guid sectionId, string pageId, string comment);
         Task UpdateApplicationReviewAssessorModerationAsync(Guid applicationId, ApplicationReviewStatus status);
-
+        Task<UkrlpLookupResponse> UkrlpLookup(string ukprn);
     }
 }

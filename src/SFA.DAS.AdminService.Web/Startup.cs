@@ -32,8 +32,6 @@ using SFA.DAS.AdminService.Application.Interfaces.Validation;
 using SFA.DAS.AdminService.Web.Services;
 using SFA.DAS.AdminService.Web.Domain;
 using System.Security.Claims;
-using SFA.DAS.RoatpAssessor.Services;
-using MediatR;
 
 namespace SFA.DAS.AdminService.Web
 {
@@ -110,14 +108,14 @@ namespace SFA.DAS.AdminService.Web
             services.AddAntiforgery(options => options.Cookie = new CookieBuilder() { Name = ".Assessors.Staff.AntiForgery", HttpOnly = false });
             services.AddHealthChecks();
             MappingStartup.AddMappings();
+
+            RoatpAssessor.Configuration.IoC.ConfigureServices(ApplicationConfiguration.ApplyApiAuthentication, services);
             
             ConfigureDependencyInjection(services);           
         }
 
         private void ConfigureDependencyInjection(IServiceCollection services)
         {
-            services.AddMediatR(typeof(RoatpAssessor.Application.Gateway.Commands.StartGatewayReviewCommand).Assembly);
-
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
             services.Scan(x => x.FromCallingAssembly()
@@ -127,7 +125,6 @@ namespace SFA.DAS.AdminService.Web
 
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<IQnaTokenService, QnaTokenService>();
-            services.AddTransient<IApplyTokenService, ApplyTokenService>();
 
             services.AddTransient(x => ApplicationConfiguration);
 
@@ -160,11 +157,6 @@ namespace SFA.DAS.AdminService.Web
               ApplicationConfiguration.QnaApiAuthentication.ApiBaseAddress,
               x.GetService<IQnaTokenService>(),
               x.GetService<ILogger<QnaApiClient>>()));
-
-            services.AddTransient<IApplyApiClient>(x => new ApplyApiClient(
-              ApplicationConfiguration.ApplyApiAuthentication.ApiBaseAddress,
-              x.GetService<IApplyTokenService>(),
-              x.GetService<ILogger<ApplyApiClient>>()));
 
             services.AddTransient<IValidationService, ValidationService>();
             services.AddTransient<IAssessorValidationService, AssessorValidationService>();

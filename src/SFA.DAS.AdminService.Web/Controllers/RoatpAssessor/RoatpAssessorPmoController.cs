@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.AssessorService.Application.Api.Client.Clients;
 using SFA.DAS.RoatpAssessor.Domain.Entities;
-using SFA.DAS.RoatpAssessor.Services;
+using SFA.DAS.RoatpAssessor.Services.ApplyApi;
 
 namespace SFA.DAS.AdminService.Web.Controllers.RoatpAssessor
 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.AdminService.Web.ViewModels.RoatpAssessor;
-using SFA.DAS.RoatpAssessor.Services;
+using SFA.DAS.RoatpAssessor.Services.ApplyApi;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace SFA.DAS.RoatpAssessor.Services
+namespace SFA.DAS.RoatpAssessor.Services.ApplyApi
 {
     public class ApplyApiClient : ApiClientBase, IApplyApiClient
     {
@@ -96,6 +96,14 @@ namespace SFA.DAS.RoatpAssessor.Services
             using (var request = new HttpRequestMessage(HttpMethod.Post, $"/ApplicationReview/{applicationId}/UpdateAssessorModeration"))
             {
                 await PostPutRequest<object>(request, new { AssessorModerationStatus = status.ToString() });
+            }
+        }
+
+        public async Task<UkrlpLookupResponse> UkrlpLookup(string ukprn)
+        {
+            using (var request = new HttpRequestMessage(HttpMethod.Get, $"/ukrlp-lookup?ukprn={ukprn}"))
+            {
+                return await RequestAndDeserialiseAsync<UkrlpLookupResponse>(request);
             }
         }
     }

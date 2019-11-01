@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SFA.DAS.AssessorService.Api.Types.Models.UKRLP
 {
 
     public class ProviderDetails
     {
+        private const string LegalAddressIdentifier = "L";
+
         public string UKPRN { get; set; }
         public string ProviderName { get; set; }
         public string ProviderStatus { get; set; }
@@ -13,6 +16,8 @@ namespace SFA.DAS.AssessorService.Api.Types.Models.UKRLP
         public DateTime? VerificationDate { get; set; }
         public List<ProviderAlias> ProviderAliases { get; set; }
         public List<VerificationDetails> VerificationDetails { get; set; }
+
+        public ProviderContact PrimaryContactDetails => ContactDetails.FirstOrDefault(x => x.ContactType == LegalAddressIdentifier);
     }
 
     public class ProviderContact
@@ -56,5 +61,13 @@ namespace SFA.DAS.AssessorService.Api.Types.Models.UKRLP
     {
         public string VerificationAuthority { get; set; }
         public string VerificationId { get; set; }
+        public bool PrimaryVerificationSource { get; set; }
+    }
+
+    public class VerificationAuthorities
+    {
+        public const string CompaniesHouseAuthority = "Companies House";
+        public const string CharityCommissionAuthority = "Charity Commission";
+        public const string SoleTraderPartnershipAuthority = "Sole Trader or Non-limited Partnership";
     }
 }

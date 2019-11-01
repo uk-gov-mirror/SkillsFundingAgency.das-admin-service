@@ -2,11 +2,10 @@
 using SFA.DAS.AssessorService.Application.Api.Client.Clients;
 using SFA.DAS.RoatpAssessor.Application.Extensions;
 using SFA.DAS.RoatpAssessor.Application.Models;
-using SFA.DAS.RoatpAssessor.Services;
+using SFA.DAS.RoatpAssessor.Services.ApplyApi;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
