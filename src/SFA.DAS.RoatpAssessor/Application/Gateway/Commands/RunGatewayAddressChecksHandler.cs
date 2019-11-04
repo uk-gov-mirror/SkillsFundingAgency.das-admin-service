@@ -12,63 +12,56 @@ using System.Threading.Tasks;
 
 namespace SFA.DAS.RoatpAssessor.Application.Gateway.Commands
 {
-    public class RunGatewayLegalChecksHandler : IRequestHandler<RunGatewayLegalChecksCommand>
+    public class RunGatewayAddressChecksHandler : IRequestHandler<RunGatewayAddressChecksCommand>
     {
         private readonly IApplyApiClient _applyApiClient;
         private readonly IQnaApiClient _qnaApiClient;
-        private readonly ILegalCheckMapper _legalCheckMapper;
+        private readonly IAddressCheckMapper _addressCheckMapper;
         private readonly ITimeProvider _timeProvider;
 
-        public RunGatewayLegalChecksHandler(
+        public RunGatewayAddressChecksHandler(
             IApplyApiClient applyApiClient, 
             IQnaApiClient qnaApiClient, 
-            ILegalCheckMapper legalCheckMapper,
+            IAddressCheckMapper addressCheckMapper,
             ITimeProvider timeProvider)
         {
             _applyApiClient = applyApiClient;
             _qnaApiClient = qnaApiClient;
-            _legalCheckMapper = legalCheckMapper;
+            _addressCheckMapper = addressCheckMapper;
             _timeProvider = timeProvider;
         }
 
-        public async Task<Unit> Handle(RunGatewayLegalChecksCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(RunGatewayAddressChecksCommand request, CancellationToken cancellationToken)
         {
             var review = await _applyApiClient.GetApplicationReviewAsync(request.ApplicationId);
 
             if (!review.GatewayReviewIsInProgress)
             {
-                throw new Exception($"Review '{request.ApplicationId}' is not in correct state to run Gateway legal checks");
+                throw new Exception($"Review '{request.ApplicationId}' is not in correct state to run Gateway address checks");
             }
 
             var applicationData = new RoatpAssessorApplicationData(await _qnaApiClient.GetApplicationData(review.ApplicationId));
 
-            var ukrlpCheck = await DoUkrlpCheckAsync(applicationData.UKPRN);
+            var ukrlpCheckTask = DoUkrlpCheckAsync(applicationData.UKPRN);
+            var companyHouseCheckTask = TryCompaniesHouseCheckAsync(applicationData.UKRLP_Verification_CompanyNumber);
+            var charityCommisionTask = TryCharityCommissionCheckAsync(applicationData.UKRLP_Verification_CharityRegNumber);
 
-            string companyNumber = string.IsNullOrEmpty(applicationData.UKRLP_Verification_CompanyNumber) ?
-                ukrlpCheck.CompanyNumber : applicationData.UKRLP_Verification_CompanyNumber;
+            await Task.WhenAll(ukrlpCheckTask, companyHouseCheckTask, charityCommisionTask);
 
-            string charityRegNumber = string.IsNullOrEmpty(applicationData.UKRLP_Verification_CharityRegNumber) ? 
-                ukrlpCheck.CharityRegNumber : applicationData.UKRLP_Verification_CharityRegNumber;
-
-            var companyHouseCheckTask = TryCompaniesHouseCheckAsync(companyNumber);
-            var charityCommisionTask = TryCharityCommissionCheckAsync(charityRegNumber);
-
-            await Task.WhenAll(companyHouseCheckTask, charityCommisionTask);
-
-            var legalChecks = new LegalChecks
+            var addressChecks = new AddressChecks
             {
                 CheckedAt = _timeProvider.UtcNow,
-                Ukrlp = ukrlpCheck,
+                Ukrlp = ukrlpCheckTask.Result,
                 CompaniesHouse = companyHouseCheckTask.Result,
                 CharityCommission = charityCommisionTask.Result
             };
 
-            await _applyApiClient.UpdateApplicationReviewLegalChecks(review.ApplicationId, legalChecks);
+            await _applyApiClient.UpdateApplicationReviewAddressChecks(review.ApplicationId, addressChecks);
 
             return Unit.Value;
         }
 
-        private async Task<UkrlpLegalCheck> DoUkrlpCheckAsync(string ukprn)
+        private async Task<AddressCheck> DoUkrlpCheckAsync(string ukprn)
         {
             var response = await _applyApiClient.UkrlpLookup(ukprn);
 
@@ -77,12 +70,12 @@ namespace SFA.DAS.RoatpAssessor.Application.Gateway.Commands
 
             var providerDetails = response.Results.FirstOrDefault();
 
-            var check = _legalCheckMapper.MapUkrlp(providerDetails);
+            var check = _addressCheckMapper.MapUkrlp(providerDetails);
 
             return check;
         }
 
-        private async Task<CompaniesHouseLegalCheck> TryCompaniesHouseCheckAsync(string companiesHouseNumber)
+        private async Task<AddressCheck> TryCompaniesHouseCheckAsync(string companiesHouseNumber)
         {
             if (string.IsNullOrEmpty(companiesHouseNumber))
                 return null;
@@ -92,12 +85,12 @@ namespace SFA.DAS.RoatpAssessor.Application.Gateway.Commands
             if (company == null)
                 return null;
 
-            var check = _legalCheckMapper.MapCompaniesHouse(company);
+            var check = _addressCheckMapper.MapCompaniesHouse(company);
 
             return check;
         }
 
-        private async Task<CharityCommissionLegalCheck> TryCharityCommissionCheckAsync(string charityRegNumber)
+        private async Task<AddressCheck> TryCharityCommissionCheckAsync(string charityRegNumber)
         {
             if (!int.TryParse(charityRegNumber, out var charityNo))
                 return null;
@@ -107,7 +100,7 @@ namespace SFA.DAS.RoatpAssessor.Application.Gateway.Commands
             if (charity == null)
                 return null;
 
-            var check = _legalCheckMapper.MapCharity(charity);
+            var check = _addressCheckMapper.MapCharity(charity);
 
             return check;
         }

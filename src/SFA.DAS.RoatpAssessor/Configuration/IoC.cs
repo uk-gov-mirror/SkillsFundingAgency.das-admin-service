@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using SFA.DAS.AdminService.Settings;
 using SFA.DAS.AssessorService.Application.Api.Client;
 using SFA.DAS.RoatpAssessor.Application.Mappers;
+using SFA.DAS.RoatpAssessor.Application.Services;
 using SFA.DAS.RoatpAssessor.Services.ApplyApi;
 
 namespace SFA.DAS.RoatpAssessor.Configuration
@@ -21,7 +22,10 @@ namespace SFA.DAS.RoatpAssessor.Configuration
               x.GetService<IApplyTokenService>(),
               x.GetService<ILogger<ApplyApiClient>>()));
 
-            services.AddTransient<IProviderDetailsToUkrlpCheckMapper, ProviderDetailsToUkrlpCheckMapper>();
+            services.AddTransient<ITimeProvider, TimeProvider>();
+
+            services.AddTransient<ILegalCheckMapper, LegalCheckMapper>();
+            services.AddTransient<IAddressCheckMapper, AddressCheckMapper>();
         }
     }
 }
