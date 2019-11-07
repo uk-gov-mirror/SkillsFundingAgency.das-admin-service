@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,12 +28,7 @@ namespace SFA.DAS.AdminService.Web.Controllers.RoatpAssessor
             var request = new GetGatewayDashboardRequest();
             var response = await _mediator.Send(request);
 
-            var vm = new RoatpAssessorGatewayDashboardViewModel
-            {
-                PendingReviews = response.PendingReviews,
-                InProgressReviews = response.InProgressReviews,
-                CompletedReviews = response.CompletedReviews
-            };
+            var vm = Mapper.Map<RoatpAssessorGatewayDashboardViewModel>(response); 
 
             return View("~/Views/RoatpAssessor/RoatpAssessorGateway/Dashboard.cshtml", vm);
         }
@@ -52,13 +48,15 @@ namespace SFA.DAS.AdminService.Web.Controllers.RoatpAssessor
             return RedirectToAction("Dashboard");
         }
 
-        [HttpGet("{applicationId:Guid}/task-list")]
+        [HttpGet("{applicationId:Guid}/tasklist")]
         public async Task<IActionResult> TaskList([FromRoute] Guid applicationId)
         {
-            var request = new GetGatewayReviewTaskListRequest(applicationId);
+            var request = new GetGatewayTaskListRequest(applicationId);
             var response = await _mediator.Send(request);
 
-            throw new NotImplementedException("to do");
+            var vm = Mapper.Map<RoatpAssessorGatewayTaskListViewModel>(response);
+
+            return View("~/Views/RoatpAssessor/RoatpAssessorGateway/TaskList.cshtml", vm);
         }
 
         [HttpGet("{applicationId:Guid}")]

@@ -80,11 +80,11 @@
                             <td class="govuk-table__cell">
                                 <a asp-controller="RoatpAssessorGateway"
                                    asp-action="StartReviewGet"
-                                   asp-route-applicationId="@application.ApplicationId">@application.Organisation</a>
+                                   asp-route-applicationId="@application.ApplicationId">@application.Name</a>
                             </td>
                             <td class="govuk-table__cell">@application.Ukprn</td>
                             <td class="govuk-table__cell">@application.ApplicationRef</td>
-                            <td class="govuk-table__cell">@application.ProviderType</td>
+                            <td class="govuk-table__cell">@application.ProviderRoute</td>
                             <td class="govuk-table__cell">@application.SubmittedAt.ToGdsDate()</td>
                         </tr>
                     }
@@ -112,12 +112,12 @@
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">
                                 <a asp-controller="RoatpAssessorGateway"
-                                   asp-action="Index"
-                                   asp-route-applicationId="@application.ApplicationId">@application.Organisation</a>
+                                   asp-action="TaskList"
+                                   asp-route-applicationId="@application.ApplicationId">@application.Name</a>
                             </td>
                             <td class="govuk-table__cell">@application.Ukprn</td>
                             <td class="govuk-table__cell">@application.ApplicationRef</td>
-                            <td class="govuk-table__cell">@application.ProviderType</td>
+                            <td class="govuk-table__cell">@application.ProviderRoute</td>
                             <td class="govuk-table__cell">@application.SubmittedAt.ToGdsDate()</td>
                         </tr>
                     }
@@ -144,10 +144,10 @@
                     @foreach (var application in Model.CompletedReviews)
                     {
                         <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">@application.Organisation</td>
+                            <td class="govuk-table__cell">@application.Name</td>
                             <td class="govuk-table__cell">@application.Ukprn</td>
                             <td class="govuk-table__cell">@application.ApplicationRef</td>
-                            <td class="govuk-table__cell">@application.ProviderType</td>
+                            <td class="govuk-table__cell">@application.ProviderRoute</td>
                             <td class="govuk-table__cell">@application.SubmittedAt.ToGdsDate()</td>
                         </tr>
                     }

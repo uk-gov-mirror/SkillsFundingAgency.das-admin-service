@@ -69,8 +69,8 @@ namespace SFA.DAS.RoatpAssessor.Application.Gateway.Requests
                 ApplicationId = applicationId,
                 ApplicationRef = applicationRef,
                 SubmittedAt = submittedAt,
-                Organisation = applicationData.UKRLP_LegalName,
-                ProviderType = applicationData.Apply_ProviderRoute.ToString(),
+                Name = applicationData.UKRLP_LegalName,
+                ProviderRoute = applicationData.Apply_ProviderRoute.ToString(),
                 Ukprn = applicationData.UKPRN
             };
         }

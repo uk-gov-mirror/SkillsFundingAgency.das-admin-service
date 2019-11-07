@@ -48,6 +48,10 @@ namespace SFA.DAS.RoatpAssessor.Domain.Entities
             (AssessorReview1Status == ApplicationReviewStatus.Passed || AssessorReview1Status == ApplicationReviewStatus.Failed) &&
             (AssessorReview2Status == ApplicationReviewStatus.Passed || AssessorReview2Status == ApplicationReviewStatus.Failed) &&
             AssessorModerationStatus == ApplicationReviewStatus.InProgress;
+
+        public bool CanDoGatewayLegalChecks => GatewayReviewIsInProgress;
+
+        public bool CanDoGatewayAddressChecks => GatewayReviewIsInProgress;
     }
 
     public enum ApplicationReviewStatus

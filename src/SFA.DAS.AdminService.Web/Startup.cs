@@ -107,6 +107,7 @@ namespace SFA.DAS.AdminService.Web
 
             services.AddAntiforgery(options => options.Cookie = new CookieBuilder() { Name = ".Assessors.Staff.AntiForgery", HttpOnly = false });
             services.AddHealthChecks();
+
             MappingStartup.AddMappings();
 
             RoatpAssessor.Configuration.IoC.ConfigureServices(ApplicationConfiguration.ApplyApiAuthentication, services);
