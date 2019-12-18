@@ -1,6 +1,8 @@
-﻿using SFA.DAS.RoatpAssessor.Application.Gateway;
+﻿using SFA.DAS.AssessorService.Api.Types.Models.Roatp;
+using SFA.DAS.AssessorService.Api.Types.Models.Roatp.Assessor;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SFA.DAS.AdminService.Web.ViewModels.RoatpAssessor.Gateway
 {
@@ -44,15 +46,26 @@ namespace SFA.DAS.AdminService.Web.ViewModels.RoatpAssessor.Gateway
 
             return SortedDescending ? "descending" : "ascending";
         }
+
+        public List<ProviderType> ProviderTypes { get; set; }
+
+        public string ProviderRoute(string applicationRouteId)
+        {
+            var providerRoute = ProviderTypes.FirstOrDefault(p => p.Id.ToString() == applicationRouteId);
+
+            var routeName = providerRoute.Type;
+
+            return routeName.Substring(0, routeName.IndexOf(' '));
+        }
     }
 
     public class DashboardApplication
     {
-        public Guid Id { get; set; }
+        public Guid ApplicationId { get; set; }
         public string OrganisationName { get; set; }
-        public string Ukprn { get; set; }
-        public string ApplicationRef { get; set; }
-        public string ProviderRoute { get; set; }
-        public DateTime SubmittedAt { get; set; }
+        public string UKPRN { get; set; }
+        public string ReferenceNumber { get; set; }
+        public string ApplicationRouteId { get; set; }
+        public DateTime ApplicationSubmittedOn { get; set; }
     }
 }

@@ -10,17 +10,17 @@ using SFA.DAS.AssessorService.Api.Types.Models.Roatp.Assessor;
 namespace SFA.DAS.AdminService.Web.Controllers.RoatpAssessor
 {
     [Authorize(Roles = Domain.Roles.RoatpAssessorGateway + "," + Domain.Roles.RoatpAssessorTeam)]
-    [Route("roatp-assessor/gateway")]
-    public class GatewayController : Controller
+    [Route("roatp-assessor/assessor")]
+    public class AssessorController : Controller
     {
         private readonly IMediator _mediator;
 
-        public GatewayController(IMediator mediator)
+        public AssessorController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
-        [HttpGet("dashboard", Name = RouteNames.RoatpAssessor_Gateway_Dashboard_Get)]
+        [HttpGet("dashboard", Name = RouteNames.RoatpAssessor_Assessor_Dashboard_Get)]
         public async Task<IActionResult> Dashboard([FromQuery]string tab, [FromQuery] string sortBy, [FromQuery] string sort)
         {
             if (!Enum.TryParse(tab, out DashboardTab selectedTab))
@@ -35,10 +35,5 @@ namespace SFA.DAS.AdminService.Web.Controllers.RoatpAssessor
             return View(vm);
         }
 
-        [HttpPost("{applicationId:Guid}/start-review", Name = RouteNames.RoatpAssessor_Gateway_Start_Review)]
-        public IActionResult StartReview([FromRoute] Guid applicationId)
-        {
-            return RedirectToRoute(RouteNames.RoatpAssessor_Gateway_Dashboard_Get);
-        }
     }
 }

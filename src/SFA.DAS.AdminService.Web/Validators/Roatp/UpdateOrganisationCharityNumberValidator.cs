@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using SFA.DAS.AssessorService.Api.Types.Models.Validation;
-using SFA.DAS.AdminService.Web.Infrastructure;
 using SFA.DAS.AdminService.Web.Resources;
 using SFA.DAS.AdminService.Web.ViewModels.Roatp;
+using SFA.DAS.AssessorService.Application.Api.Client.Clients;
 
 namespace SFA.DAS.AdminService.Web.Validators.Roatp
 {

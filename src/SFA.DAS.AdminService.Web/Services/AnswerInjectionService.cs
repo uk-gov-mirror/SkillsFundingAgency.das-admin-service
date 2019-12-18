@@ -12,6 +12,7 @@ using SFA.DAS.AssessorService.Domain.Consts;
 using SFA.DAS.AdminService.Web.Resources;
 using SFA.DAS.AdminService.Web.Infrastructure;
 using SFA.DAS.AssessorService.Api.Types.Models.Register;
+using SFA.DAS.AssessorService.Application.Api.Client.Clients;
 
 namespace SFA.DAS.AdminService.Web.Services
 {

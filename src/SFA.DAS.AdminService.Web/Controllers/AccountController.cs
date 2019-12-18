@@ -39,10 +39,20 @@ namespace SFA.DAS.AdminService.Web.Controllers
 
                 return RedirectToAction("InvalidRole", "Home");
             }
-
-            if (User.HasRoatpRolesOnly())
+                        
+            if (User.HasRoatpGatewayRoleOnly())
+            {
+                return RedirectToRoute(RouteNames.RoatpAssessor_Gateway_Dashboard_Get);
+            }    
+            else if (User.HasRoatpAssessorRoleOnly())
+            {
+                return RedirectToRoute(RouteNames.RoatpAssessor_Gateway_Dashboard_Get);
+            }
+            else if (User.HasOneOrMultipleRoatpRoles())
+            {
                 return RedirectToRoute(RouteNames.RoatpDashboard_Index_Get);
-            
+            }
+
             return RedirectToAction("Index", "Dashboard");
         }
 

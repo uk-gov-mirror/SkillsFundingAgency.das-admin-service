@@ -6,7 +6,8 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using SFA.DAS.AdminService.Web.ViewModels.Roatp;
-    
+    using SFA.DAS.AssessorService.Application.Api.Client.Clients;
+
     [Authorize]
     public class RoatpSearchController : RoatpSearchResultsControllerBase
     {

@@ -33,6 +33,9 @@ using SFA.DAS.AdminService.Web.Services;
 using SFA.DAS.AdminService.Web.Domain;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Razor;
+using MediatR;
+using SFA.DAS.RoatpAssessor.Application.Gateway.Queries;
+using System.Reflection;
 
 namespace SFA.DAS.AdminService.Web
 { 
@@ -116,9 +119,7 @@ namespace SFA.DAS.AdminService.Web
             services.AddHealthChecks();
             MappingStartup.AddMappings();
             
-            ConfigureDependencyInjection(services);
-
-            RoatpAssessor.Configuration.IoC.ConfigureServices(ApplicationConfiguration.ApplyApiAuthentication, services);
+            ConfigureDependencyInjection(services);           
         }
 
         private void ConfigureDependencyInjection(IServiceCollection services)
@@ -165,6 +166,11 @@ namespace SFA.DAS.AdminService.Web
               x.GetService<IQnaTokenService>(),
               x.GetService<ILogger<QnaApiClient>>()));
 
+            services.AddTransient<IRoatpApplyApiClient>(x => new RoatpApplyApiClient(
+              ApplicationConfiguration.ApplyApiAuthentication.ApiBaseAddress,              
+              x.GetService<ILogger<RoatpApplyApiClient>>(),
+              x.GetService<ITokenService>()));
+
             services.AddTransient<IValidationService, ValidationService>();
             services.AddTransient<IAssessorValidationService, AssessorValidationService>();
             services.AddTransient<ISpecialCharacterCleanserService, SpecialCharacterCleanserService>();
@@ -192,6 +198,11 @@ namespace SFA.DAS.AdminService.Web
                 ApplicationConfiguration.ClientApiAuthentication.ApiBaseAddress,
                 x.GetService<ITokenService>(),
                 x.GetService<ILogger<StandardServiceClient>>()));
+
+            services.AddTransient<IRoatpTokenService, RoatpTokenService>();
+            services.AddTransient<IRoatpApiClient, RoatpApiClient>();
+
+            services.AddMediatR(typeof(GetDashboardHandler).GetTypeInfo().Assembly);
 
             UserExtensions.Logger = services.BuildServiceProvider().GetService<ILogger<ClaimsPrincipal>>();
         }

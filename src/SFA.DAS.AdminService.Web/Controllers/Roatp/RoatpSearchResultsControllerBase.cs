@@ -8,6 +8,7 @@
     using SFA.DAS.AdminService.Web.ViewModels.Roatp;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
+    using SFA.DAS.AssessorService.Application.Api.Client.Clients;
 
     [Authorize]
     public class RoatpSearchResultsControllerBase : Controller

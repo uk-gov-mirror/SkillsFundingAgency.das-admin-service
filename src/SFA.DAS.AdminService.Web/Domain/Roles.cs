@@ -13,6 +13,7 @@ namespace SFA.DAS.AdminService.Web.Domain
         public const string RegisterViewOnlyTeam = "EPV";
         public const string RoatpGatewayTeam = "APR";
         public const string RoatpAssessorGateway = "GAC";
+        public const string RoatpAssessorTeam = "AAC";
         public const string EpaoReportsOnlyTeam = "EPX";
 
         public static bool HasValidRole(this ClaimsPrincipal user)
@@ -24,12 +25,49 @@ namespace SFA.DAS.AdminService.Web.Domain
                    || user.IsInRole(RegisterViewOnlyTeam)
                    || user.IsInRole(RoatpGatewayTeam)
                    || user.IsInRole(RoatpAssessorGateway)
+                   || user.IsInRole(RoatpAssessorTeam)
                    || user.IsInRole(EpaoReportsOnlyTeam);
         }
 
-        public static bool HasRoatpRolesOnly(this ClaimsPrincipal user)
+        public static bool HasOneOrMultipleRoatpRoles(this ClaimsPrincipal user)
         {
-            if ((user.IsInRole(RoatpGatewayTeam) || user.IsInRole(RoatpAssessorGateway))
+            if ((user.IsInRole(RoatpGatewayTeam) || user.IsInRole(RoatpAssessorGateway)) || user.IsInRole(RoatpAssessorTeam)
+                && !user.IsInRole(CertificationTeam)
+                && !user.IsInRole(OperationsTeam)
+                && !user.IsInRole(AssessmentDeliveryTeam)
+                && !user.IsInRole(ProviderRiskAssuranceTeam)
+                && !user.IsInRole(RegisterViewOnlyTeam)
+                && !user.IsInRole(EpaoReportsOnlyTeam))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool HasRoatpGatewayRoleOnly(this ClaimsPrincipal user)
+        {
+            if ((user.IsInRole(RoatpGatewayTeam) 
+                && !user.IsInRole(RoatpAssessorGateway)) 
+                && !user.IsInRole(RoatpAssessorTeam)
+                && !user.IsInRole(CertificationTeam)
+                && !user.IsInRole(OperationsTeam)
+                && !user.IsInRole(AssessmentDeliveryTeam)
+                && !user.IsInRole(ProviderRiskAssuranceTeam)
+                && !user.IsInRole(RegisterViewOnlyTeam)
+                && !user.IsInRole(EpaoReportsOnlyTeam))
+            {
+                return true;
+            }
+
+            return false;
+        }    
+
+        public static bool HasRoatpAssessorRoleOnly(this ClaimsPrincipal user)
+        {
+            if ((user.IsInRole(RoatpAssessorTeam) 
+                && !user.IsInRole(RoatpAssessorGateway)) 
+                && !user.IsInRole(RoatpGatewayTeam)
                 && !user.IsInRole(CertificationTeam)
                 && !user.IsInRole(OperationsTeam)
                 && !user.IsInRole(AssessmentDeliveryTeam)

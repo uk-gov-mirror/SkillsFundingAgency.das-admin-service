@@ -2,7 +2,7 @@
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using SFA.DAS.AdminService.Settings;
 
-namespace SFA.DAS.AdminService.Web.Infrastructure
+namespace SFA.DAS.AssessorService.Application.Api.Client
 {
     public class RoatpTokenService : IRoatpTokenService
     {

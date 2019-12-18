@@ -17,5 +17,6 @@ namespace SFA.DAS.AdminService.Web
         //RoatpAssesssor
         public const string RoatpAssessor_Gateway_Dashboard_Get = "RoatpAssessor_Gateway_Dashboard_Get";
         public const string RoatpAssessor_Gateway_Start_Review = "RoatpAssessor_Gateway_Start_Review";
+        public const string RoatpAssessor_Assessor_Dashboard_Get = "RoatpAssessor_Assessor_Dashboard_Get";
     }
 }

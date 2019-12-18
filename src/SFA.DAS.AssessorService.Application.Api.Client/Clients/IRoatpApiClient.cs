@@ -1,7 +1,5 @@
 ﻿
-using System;
-
-namespace SFA.DAS.AdminService.Web.Infrastructure
+namespace SFA.DAS.AssessorService.Application.Api.Client.Clients
 {
     using System;
     using SFA.DAS.AssessorService.Api.Types.Models.Roatp;

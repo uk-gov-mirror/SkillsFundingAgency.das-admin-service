@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SFA.DAS.AdminService.Web.ViewModels.RoatpAssessor.Gateway;
+using RoatpAssessorTypes = SFA.DAS.AssessorService.Api.Types.Models.Roatp.Assessor;
 
 namespace SFA.DAS.AdminService.Web.AutoMapperProfiles
 {
@@ -7,7 +8,7 @@ namespace SFA.DAS.AdminService.Web.AutoMapperProfiles
     {
         public RoatpAssessorProfile()
         {
-            CreateMap<RoatpAssessor.Domain.DTOs.Application, DashboardApplication>();
+            CreateMap<RoatpAssessorTypes.Application, DashboardApplication>();
         }
     }
 }

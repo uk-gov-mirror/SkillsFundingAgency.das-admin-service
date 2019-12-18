@@ -1,4 +1,4 @@
-﻿namespace SFA.DAS.RoatpAssessor.Domain.DTOs
+﻿namespace SFA.DAS.AssessorService.Api.Types.Models.Roatp.Assessor
 {
     public class GatewayCounts
     {

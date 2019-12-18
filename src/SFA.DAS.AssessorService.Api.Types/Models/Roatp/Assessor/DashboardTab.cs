@@ -1,4 +1,4 @@
-﻿namespace SFA.DAS.RoatpAssessor.Application.Gateway
+﻿namespace SFA.DAS.AssessorService.Api.Types.Models.Roatp.Assessor
 {
     public enum DashboardTab
     {

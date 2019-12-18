@@ -1,5 +1,5 @@
 ﻿
-namespace SFA.DAS.AdminService.Web.Infrastructure
+namespace SFA.DAS.AssessorService.Application.Api.Client.Clients
 {
     using System;
     using System.Collections.Generic;
@@ -186,7 +186,7 @@ namespace SFA.DAS.AdminService.Web.Infrastructure
                 return await response.Content.ReadAsAsync<T>();
             }
         }
-   
+
         private async Task<HttpStatusCode> Post<T>(string uri, T model)
         {
             _client.DefaultRequestHeaders.Authorization =

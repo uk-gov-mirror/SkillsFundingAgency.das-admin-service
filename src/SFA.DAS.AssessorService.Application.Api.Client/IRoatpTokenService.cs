@@ -1,4 +1,4 @@
-﻿namespace SFA.DAS.AdminService.Web.Infrastructure
+﻿namespace SFA.DAS.AssessorService.Application.Api.Client
 {
     public interface IRoatpTokenService
     {

@@ -4,12 +4,12 @@
     using System.Linq;
     using SFA.DAS.AssessorService.Api.Types.Models.Roatp;
     using FluentAssertions;
-    using Infrastructure;
     using Moq;
     using NUnit.Framework;
     using SFA.DAS.AdminService.Web.Resources;
     using SFA.DAS.AdminService.Web.Validators.Roatp;
     using SFA.DAS.AdminService.Web.ViewModels.Roatp;
+    using SFA.DAS.AssessorService.Application.Api.Client.Clients;
 
     [TestFixture]
     public class AddOrganisationValidatorTests

@@ -8,7 +8,7 @@
     using Microsoft.Extensions.Logging;
     using OfficeOpenXml;
     using SFA.DAS.AdminService.Web.Helpers;
-    using SFA.DAS.AdminService.Web.Infrastructure;
+    using SFA.DAS.AssessorService.Application.Api.Client.Clients;
 
     [Authorize]
     public class DownloadRoatpController : Controller

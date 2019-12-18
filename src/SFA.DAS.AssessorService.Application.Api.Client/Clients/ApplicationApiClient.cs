@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using SFA.DAS.AssessorService.Application.Api.Client;
 using SFA.DAS.AssessorService.ApplyTypes;
 using System;
 using System.Collections.Generic;
@@ -9,8 +8,8 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using UpdateFinancialsRequest = SFA.DAS.AssessorService.Api.Types.Models.Register.UpdateFinancialsRequest;
 
-namespace SFA.DAS.AdminService.Web.Infrastructure
-{
+namespace SFA.DAS.AssessorService.Application.Api.Client.Clients
+{ 
     public class ApplicationApiClient : IApplicationApiClient
     {
         private readonly HttpClient _client;
@@ -163,5 +162,7 @@ namespace SFA.DAS.AdminService.Web.Infrastructure
             await Post("api/ao/assessment-organisations/update-financials", updateFinancialsRequest);
         }
         #endregion
+
+
     }
 }

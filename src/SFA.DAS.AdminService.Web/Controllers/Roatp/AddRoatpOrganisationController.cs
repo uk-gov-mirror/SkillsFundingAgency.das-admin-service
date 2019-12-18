@@ -17,6 +17,7 @@ namespace SFA.DAS.AdminService.Web.Controllers.Roatp
     using Microsoft.Extensions.Logging;
     using SFA.DAS.AssessorService.Api.Types.Models.Roatp;
     using SFA.DAS.AssessorService.Api.Types.Models.Validation;
+    using SFA.DAS.AssessorService.Application.Api.Client.Clients;
     using System.Linq;
 
     [Authorize]

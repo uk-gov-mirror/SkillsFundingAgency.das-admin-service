@@ -1,7 +1,7 @@
 ﻿using MediatR;
 
-namespace SFA.DAS.RoatpAssessor.Application.Gateway.Requests
-{
+namespace SFA.DAS.AssessorService.Api.Types.Models.Roatp.Assessor
+{ 
     public class GetDashboardRequest : IRequest<GetDashboardResponse>
     {
         public DashboardTab Tab { get; }

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using SFA.DAS.AssessorService.ApplyTypes;
 using UpdateFinancialsRequest = SFA.DAS.AssessorService.Api.Types.Models.Register.UpdateFinancialsRequest;
 
-namespace SFA.DAS.AdminService.Web.Infrastructure
+namespace SFA.DAS.AssessorService.Application.Api.Client.Clients
 {
     public interface IApplicationApiClient
     {
@@ -24,6 +24,7 @@ namespace SFA.DAS.AdminService.Web.Infrastructure
         Task DeleteFeedback(Guid applicationId, int sequenceId, int sectionId, string pageId, Guid feedbackId);
 
         Task UpdateFinancials(UpdateFinancialsRequest updateFinancialsRequest);
+
     }
 
     public class ApplicationResponse
