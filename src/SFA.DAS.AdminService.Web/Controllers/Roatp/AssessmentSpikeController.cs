@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SFA.DAS.AssessorService.Application.Api.Client.Clients;
 using System;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SFA.DAS.AdminService.Web.Controllers.Roatp
 {
-    
+    [Authorize]
     public class AssessmentSpikeController : Controller
     {
         private readonly IQnaApiClient _qnaApiClient;
