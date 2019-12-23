@@ -1,0 +1,133 @@
+﻿@model SFA.DAS.AdminService.Web.Controllers.Roatp.AssessmentViewModel
+
+<main class="govuk-main-wrapper " id="main-content" role="main">
+
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <span class="govuk-caption-m">@Model.SectionTitle</span>
+            <h1 class="govuk-heading-xl">@Model.Heading</h1>
+
+            <p class="govuk-body">
+                Legal name: @Model.LegalName<br>
+                UKPRN: @Model.UKPRN
+            </p>
+
+            <table class="govuk-table">
+                <tbody class="govuk-table__body">
+                    @foreach (var question in Model.Questions)
+                    {
+                        <tr class="govuk-table__row">
+                            <th class="govuk-table__header">Application question</th>
+                            <td class="govuk-table__cell">@Html.Raw(question.QuestionText)</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                            <th class="govuk-table__header">Applicant's answer</th>
+                            <td class="govuk-table__cell">@Html.Raw(question.Answer)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @foreach (var assessmentCriteria in Model.AssessmentCriteria)
+            {
+                <h2 class="govuk-heading-m govuk-!-margin-top-9" id="realtime">@assessmentCriteria.AssessmentQuestion</h2>
+                @if (!String.IsNullOrWhiteSpace(assessmentCriteria.HelpText))
+                {
+                    <p class="govuk-body"> @Html.Raw(assessmentCriteria.HelpText) </p>
+                }
+                <div class="govuk-form-group">
+
+                    <div class="govuk-radios govuk-radios--inline">                                                                    
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="aac-3127-pya-equality-signed-1" name="aac-3127-pya-equality-signed" type="radio" value="Yes">
+                            <label class="govuk-label govuk-radios__label" for="aac-3127-pya-equality-signed-1">
+                                Yes
+                            </label>
+                        </div>
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="aac-3127-pya-equality-signed-2" name="aac-3127-pya-equality-signed" type="radio" value="No">
+                            <label class="govuk-label govuk-radios__label" for="aac-3127-pya-equality-signed-2">
+                                No
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            }
+
+
+            <form action="" method="post" class="form">
+
+                <h2 class="govuk-heading-m govuk-!-margin-top-9">What is the outcome of this check?</h2>
+
+                <div class="sops">
+                    @Html.Raw(Model.AssessmentSOPs)
+                </div>
+
+
+                <div class="govuk-form-group">
+
+                    <div class="govuk-radios govuk-radios--conditional" data-module="radios">
+
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="aac-3127-rte-engage-conditional-1" name="aac-3127-rte-engage" type="radio" value="Pass">
+                            <label class="govuk-label govuk-radios__label" for="aac-3127-rte-engage-conditional-1">
+                                Pass
+                            </label>
+                        </div>
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="aac-3127-rte-engage-conditional-2" name="aac-3127-rte-engage" type="radio" value="Fail" data-aria-controls="conditional-aac-3127-rte-engage-conditional-2">
+                            <label class="govuk-label govuk-radios__label" for="aac-3127-rte-engage-conditional-2">
+                                Fail
+                            </label>
+                        </div>
+
+                        <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-aac-3127-rte-engage-conditional-2">
+
+
+
+                            <div class="govuk-character-count" data-module="character-count" data-maxlength="750">
+
+
+                                <div class="govuk-form-group">
+                                    <label class="govuk-label" for="aac-3127-rte-engage-fail">
+                                        Add comments
+                                    </label>
+
+
+                                    <textarea class="govuk-textarea js-character-count " id="aac-3127-rte-engage-fail" name="aac-3127-rte-engage-fail" rows="5" aria-describedby="aac-3127-rte-engage-fail-info"></textarea>
+                                </div>
+
+                                <span id="aac-3127-rte-engage-fail-info" class="govuk-hint govuk-character-count__message" aria-live="polite">
+                                    You can enter up to 750 characters
+                                </span>
+                            </div>
+
+
+                        </div>
+
+
+
+                    </div>
+
+                </div>
+
+
+                <button type="submit" class="govuk-button govuk-!-margin-right-4">
+                    Save and continue
+                </button>
+                
+
+            </form>
+
+            
+
+        </div>
+    </div>
+
+
+</main>
