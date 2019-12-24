@@ -31,31 +31,49 @@ namespace SFA.DAS.AdminService.Web.Controllers.Roatp
             return View("~/Views/RoatpAssessor/AssessmentSpike.cshtml", model);
         }
 
+        public async Task<IActionResult> Download(Guid Id, int sequenceNo, int sectionId, string pageId, string questionId, string filename)
+        {
+            var sequences = await _qnaApiClient.GetAllApplicationSequences(Id);
+            var selectedSequence = sequences.Single(x => x.SequenceNo == sequenceNo);
+            var sections = await _qnaApiClient.GetSections(Id, selectedSequence.Id);
+            var selectedSection = sections.Single(x => x.SectionNo == sectionId);
+            var response = await _qnaApiClient.DownloadFile(Id, selectedSection.Id, pageId, questionId, filename);
+            var fileStream = await response.Content.ReadAsStreamAsync();
+
+            return File(fileStream, response.Content.Headers.ContentType.MediaType, filename);
+
+        }
+
         private AssessmentQuestionConfiguration GetConfig(Guid applicationId)
         {
             var config = new AssessmentQuestionConfiguration { ApplicationId = applicationId };
 
-            config.SectionId = 4;
+            config.SectionId = 2;
             config.SequenceId = 4;
             config.SectionTitle = "Protecting your apprentices checks";
             config.Heading = "Check the organisation's equality and diversity policy";
 
             config.AssessmentQuestions = new List<AssessmentQuestion>
             {
+                //new AssessmentQuestion
+                //{
+                //    PageId = "4035",
+                //    QuestionId = "PYA-45"
+                //},
+                //new AssessmentQuestion
+                //{
+                //    PageId = "4035",
+                //    QuestionId = "PYA-46"
+                //},
+                //new AssessmentQuestion
+                //{
+                //    PageId = "4035",
+                //    QuestionId = "PYA-47"
+                //},
                 new AssessmentQuestion
                 {
-                    PageId = "4035",
-                    QuestionId = "PYA-45"
-                },
-                new AssessmentQuestion
-                {
-                    PageId = "4035",
-                    QuestionId = "PYA-46"
-                },
-                new AssessmentQuestion
-                {
-                    PageId = "4035",
-                    QuestionId = "PYA-47"
+                    PageId = "4010",
+                    QuestionId = "PYA-20"
                 }
             };
 
@@ -103,6 +121,7 @@ namespace SFA.DAS.AdminService.Web.Controllers.Roatp
 
             var model = new AssessmentViewModel
             {
+                ApplicationId = config.ApplicationId,
                 SectionId = config.SectionId,
                 SequenceId = config.SequenceId,
                 SectionTitle = config.SectionTitle,
@@ -122,6 +141,8 @@ namespace SFA.DAS.AdminService.Web.Controllers.Roatp
                 var assessmentQuestion = new AssessmentQuestion();
                 assessmentQuestion.QuestionId = question.QuestionId;
                 assessmentQuestion.QuestionText = qnaQuestion.Label;
+                assessmentQuestion.QuestionType = qnaQuestion.Input.Type;
+                assessmentQuestion.PageId = question.PageId;
                 foreach (var pageOfAnswers in page.PageOfAnswers)
                 {
                     var matchedAnswer = pageOfAnswers.Answers.FirstOrDefault(y => y.QuestionId == question.QuestionId);
@@ -161,6 +182,7 @@ namespace SFA.DAS.AdminService.Web.Controllers.Roatp
     {
         public string PageId { get; set; }      
         public string QuestionId { get; set; }
+        public string QuestionType { get; set; }
         public string QuestionText { get; set; }
         public string Answer { get; set; }
     }

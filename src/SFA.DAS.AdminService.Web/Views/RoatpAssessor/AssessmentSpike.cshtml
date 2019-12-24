@@ -23,7 +23,26 @@
                         </tr>
                         <tr class="govuk-table__row">
                             <th class="govuk-table__header">Applicant's answer</th>
-                            <td class="govuk-table__cell">@Html.Raw(question.Answer)</td>
+                            <td class="govuk-table__cell">
+                                @if (question.QuestionType == "FileUpload")
+                                {<a href="@Url.Action("Download", "AssessmentSpike" , new
+                                   {
+                                   Id=Model.ApplicationId,
+                                   sequenceNo=Model.SequenceId,
+                                   sectionId=Model.SectionId,
+                                   pageId=question.PageId,
+                                   questionId=question.QuestionId,
+                                   filename=question.Answer
+                                   })">
+                                        @question.Answer
+                                    </a>
+                                }
+                                else
+                                {
+                                    @Html.Raw(question.Answer)
+                                }
+
+                            </td>
                         </tr>
                     }
                 </tbody>
