@@ -1,12 +1,12 @@
 @using SFA.DAS.AssessorService.ApplyTypes
-@model SFA.DAS.AdminService.Web.ViewModels.Apply.Applications.PageViewModel
+@model SFA.DAS.AdminService.Web.ViewModels.Apply.Applications.RoatpPageViewModel
 
 @{
     ViewBag.Title = @Model.Title ?? "Page not active";
     Layout = "_Layout";
 }
 
-<a class="govuk-back-link" href="@Url.Action("Section", "Application", new { applicationId = Model.ApplicationId, sequenceNo = Model.SequenceNo, sectionNo = Model.SectionNo })">Back</a>
+<a class="govuk-back-link" asp-action="Application" asp-controller="RoatpApplication" asp-route-applicationId="@Model.ApplicationId">Back</a>
 
 <main class="govuk-main-wrapper " id="main-content" role="main">
     @if (Model.Page == null)
@@ -16,7 +16,6 @@
                 <h1 class="govuk-heading-xl">Page not active</h1>
             </div>
         </div>
-
     }
     else
     {
@@ -31,7 +30,8 @@
                         <div class="govuk-error-summary__body">
                             <ul class="govuk-list govuk-error-summary__list">
                                 <li>
-                                    <a sfa-validation-for="FeedbackMessage"></a>
+                                    <a sfa-validation-for="ReviewStatus"></a>
+                                    <a sfa-validation-for="ReviewComments"></a>
                                 </li>
                             </ul>
                         </div>
@@ -40,60 +40,106 @@
 
                 <h1 class="govuk-heading-xl">@Model.Title</h1>
 
-                @foreach (var pageOfAnswers in Model.Page.PageOfAnswers)
+                @if (!Model.Page.Questions.Any())
                 {
                     <table class="govuk-table govuk-table--s">
                         <thead class="govuk-table__head">
                             <tr class="govuk-table__row">
                                 <th class="govuk-table__header" scope="col">Question</th>
-                                <th class="govuk-table__header" scope="col">Answer</th>
                             </tr>
                         </thead>
                         <tbody class="govuk-table__body">
-                            @foreach (var answer in pageOfAnswers.Answers)
-                            {
-                                var question = Model.Page.Questions.SingleOrDefault(x => x.QuestionId == answer.QuestionId);
-                                if (question != null)
-                                {
                             <tr class="govuk-table__row">
-                                <td class="govuk-table__cell">@question.Label</td>
-
-                                @if (question.Input.Type == "FileUpload")
-                                {
-                                    <td class="govuk-table__cell">
-                                        <a class="govuk-link" href="@Url.Action("DownloadFile", "Application",
-                                                new
-                                                {
-                                                    Id = Model.ApplicationId,
-                                                    sequenceNo = Model.SequenceNo,
-                                                    sectionNo = Model.SectionNo,
-                                                    pageId = Model.Page.PageId,
-                                                    questionId = answer.QuestionId,
-                                                    filename = answer.Value
-                                                })">
-                                            @answer.Value
-                                        </a>
-                                    </td>
-                                }
-                                else if (question != null && question.Input.Type == "Address")
-                                {
-                                    var address = Model.Addresses[question.QuestionId];
-                                    if (address != null)
-                                    {
-                                        <td class="govuk-table__cell">
-                                            @address.CommaSeperatedAddress()
-                                        </td>
-                                    }
-                                }
-                                else
-                                {
-                                    <td class="govuk-table__cell">@Model.DisplayAnswerValue(answer,question)</td>
-                                }
+                                <td class="govuk-table__cell">
+                                    @Html.Raw(Model.Page.BodyText)
+                                </td>
                             </tr>
-                                }
-                            }
                         </tbody>
                     </table>
+                }
+                else
+                { 
+                    @foreach (var pageOfAnswers in Model.Page.PageOfAnswers)
+                    {
+                        <table class="govuk-table govuk-table--s">
+                            <thead class="govuk-table__head">
+                                <tr class="govuk-table__row">
+                                    <th class="govuk-table__header" scope="col">Question</th>
+                                    <th class="govuk-table__header" scope="col">Answer</th>
+                                </tr>
+                            </thead>
+                            <tbody class="govuk-table__body">
+                                @foreach (var answer in pageOfAnswers.Answers)
+                                {
+                                    var question = Model.Page.Questions.SingleOrDefault(x => x.QuestionId == answer.QuestionId);
+                                    if (question != null)
+                                    {
+                                        <tr class="govuk-table__row">
+                                            <td class="govuk-table__cell">
+                                                @Html.Raw(question.Label)
+
+                                                @if (!string.IsNullOrWhiteSpace(question.QuestionBodyText))
+                                                {
+                                                <details class="govuk-details">
+                                                    <summary class="govuk-details__summary">
+                                                        <span class="govuk-details__summary-text">
+                                                            View question details
+                                                        </span>
+                                                    </summary>
+                                                    <div class="govuk-details__text">
+                                                        @Html.Raw(question.QuestionBodyText)
+                                                    </div>
+                                                </details>
+                                                }
+                                            </td>
+
+                                            @if (question.Input.Type == "FileUpload")
+                                            {
+                                                <td class="govuk-table__cell">
+                                                    <a class="govuk-link" href="@Url.Action("DownloadFile", "RoatpApplication",
+                                                    new
+                                                    {
+                                                        Id = Model.ApplicationId,
+                                                        sequenceNo = Model.SequenceNo,
+                                                        sectionNo = Model.SectionNo,
+                                                        pageId = Model.PageId,
+                                                        questionId = answer.QuestionId,
+                                                        filename = answer.Value
+                                                    })">
+                                                        @answer.Value
+                                                    </a>
+                                                </td>
+                                            }
+                                            else if (question.Input.Type == "Address")
+                                            {
+                                                var address = Model.Addresses[question.QuestionId];
+                                                if (address != null)
+                                                {
+                                                    <td class="govuk-table__cell">
+                                                        @address.CommaSeperatedAddress()
+                                                    </td>
+                                                }
+                                            }
+                                            else if (question.Input.Type == "TabularData")
+                                            {
+                                                <td class="govuk-table__cell">
+                                                    <partial name="~/Views/Roatp/Apply/Applications/_TabularData.cshtml" for="@answer.Value" />
+                                                </td>  
+                                            }
+                                            else if (Model.QuestionContainsPredefinedOptions(question))
+                                            {
+                                                <td class="govuk-table__cell">@Html.Raw(Model.DisplayAnswerValue(answer, question))</td>
+                                            }
+                                            else
+                                            {
+                                                <td class="govuk-table__cell">@Model.DisplayAnswerValue(answer, question)</td>
+                                            }
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    }
                 }
 
                 @if (Model.Page.HasFeedback)
@@ -105,13 +151,6 @@
                         <h3 class="govuk-heading-s govuk-!-margin-bottom-1">@feedback.From</h3>
                         <p class="govuk-body-s">@feedback.Date.ToShortDateString()</p>
                         <p class="govuk-body">@feedback.Message</p>
-                        @if (feedback.IsNew)
-                        {
-                            <form class="js-disable-on-submit" asp-action="DeleteFeedback" asp-controller="RoatpApplication" asp-route-applicationId="@Model.ApplicationId" 
-                                  asp-route-sequenceNo="@Model.SequenceNo" asp-route-sectionNo="@Model.SectionNo" asp-route-pageId="@Model.PageId" asp-route-feedbackId="@feedback.Id">
-                                <button class="govuk-button govuk-button--warning" type="submit">Delete</button>
-                            </form>
-                        }
                     }
 
                     <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6">
@@ -123,13 +162,36 @@
             <div class="govuk-grid-column-two-thirds">
                 <form class="js-disable-on-submit" asp-action="Feedback" asp-controller="RoatpApplication" asp-route-applicationId="@Model.ApplicationId" asp-route-sequenceNo="@Model.SequenceNo" asp-route-sectionNo="@Model.SectionNo" asp-route-pageId="@Model.PageId">
                     <div class="govuk-form-group error-message-container" sfa-anyvalidationerror-class="govuk-form-group--error">
-                        <label class="govuk-label govuk-label--l" for="message">
-                            Add feedback
-                        </label>
-                        <span class="govuk-error-message" asp-validation-for="FeedbackMessage"></span>
-                        <textarea class="govuk-textarea" rows="15" sfa-validation-for="FeedbackMessage" sfa-validationerror-class="govuk-textarea--error" asp-for="FeedbackMessage"></textarea>
+                        <legend>
+                            <h2 class="govuk-heading-l">
+                                What is the outcome for this page?
+                            </h2>
+                        </legend>
+
+                        <span class="govuk-error-message" asp-validation-for="ReviewStatus"></span>
+                        <span class="govuk-error-message" asp-validation-for="ReviewComments"></span>
+
+                        <div class="govuk-radios govuk-radios--conditional" data-module="radios">
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="pass" type="radio" name="ReviewStatus" value="Pass">
+                                <label class="govuk-label govuk-radios__label" for="pass">Pass</label>
+                            </div>
+
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="fail" data-aria-controls="fail-conditional" type="radio" name="ReviewStatus" value="Fail" @(Model.ReviewStatus == "Fail" ? "checked" : "") />
+                                <label class="govuk-label govuk-radios__label" for="inadequate">Fail</label>
+                            </div>
+
+                            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="fail-conditional">
+                                <div class="govuk-form-group">
+                                    <label class="govuk-label" for="ReviewComments">Why is it a Fail?</label>
+                                    <textarea class="govuk-textarea" rows="4" name="ReviewComments" id="ReviewComments" sfa-validation-for="ReviewComments" sfa-validationerror-class="govuk-input--error"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
-                    <button class="govuk-button" type="submit">Add feedback</button>
+                    <button class="govuk-button" type="submit">Save outcome</button>
                 </form>
             </div>
         </div>
@@ -138,7 +200,7 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body">
-                <a href="@Url.Action("Section", "Application", new {applicationId = Model.ApplicationId, sequenceNo = Model.SequenceNo, sectionNo = Model.SectionNo})" class="govuk-link">Return to section overview</a>
+                <a class="govuk-link" asp-action="Application" asp-controller="RoatpApplication" asp-route-applicationId="@Model.ApplicationId">Return to application overview</a>
             </p>
         </div>
     </div>

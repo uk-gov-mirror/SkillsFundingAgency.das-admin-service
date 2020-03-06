@@ -208,11 +208,8 @@ namespace SFA.DAS.AdminService.Web.Controllers.Roatp.Apply
         public async Task<IActionResult> Page(Guid applicationId, int sequenceNo, int sectionNo, string pageId)
         {
             var application = await _applyApiClient.GetApplication(applicationId);
+            var section = await _qnaApiClient.GetSectionBySectionNo(application.ApplicationId, sequenceNo, sectionNo);
 
-            var applySequence = application.ApplyData.Sequences.Single(x => x.SequenceNo == sequenceNo);
-            var applySection = applySequence.Sections.Single(x => x.SectionNo == sectionNo);
-
-            var section = await _qnaApiClient.GetSection(application.ApplicationId, applySection.SectionId);
             var page = await _qnaApiClient.GetPage(application.ApplicationId, section.Id, pageId);
 
             if (page?.Active is false)
@@ -230,7 +227,7 @@ namespace SFA.DAS.AdminService.Web.Controllers.Roatp.Apply
                 }
             }
 
-            var pageVm = new PageViewModel(applicationId, sequenceNo, sectionNo, pageId, section, page);
+            var pageVm = new RoatpPageViewModel(/*applicationId, sequenceNo, sectionNo, pageId, */application, section, page);
 
             var activeApplicationStatuses = new List<string> { ApplicationStatus.GatewayAssessed };
             var activeAssessorReviewStatuses = new List<string> { AssessorReviewStatus.New, AssessorReviewStatus.InProgress };
@@ -247,36 +244,77 @@ namespace SFA.DAS.AdminService.Web.Controllers.Roatp.Apply
         }
 
         [HttpPost("/Roatp/Applications/{applicationId}/Sequence/{sequenceNo}/Section/{sectionNo}/Page/{pageId}")]
-        public async Task<IActionResult> Feedback(Guid applicationId, int sequenceNo, int sectionNo, string pageId, string feedbackMessage)
+        public async Task<IActionResult> Feedback(Guid applicationId, int sequenceNo, int sectionNo, string pageId, RoatpPageViewModel viewModel)
         {
             var application = await _applyApiClient.GetApplication(applicationId);
 
-            var section = await _qnaApiClient.GetSectionBySectionNo(application.ApplicationId, sequenceNo, sectionNo);
-
-            var errorMessages = new Dictionary<string, string>();
-
-            if (string.IsNullOrWhiteSpace(feedbackMessage))
+            if (ModelState.IsValid)
             {
-                errorMessages["FeedbackMessage"] = "Please enter a feedback comment";
+                //var financialReviewDetails = new FinancialReviewDetails
+                //{
+                //    GradedBy = _contextAccessor.HttpContext.User.UserDisplayName(),
+                //    GradedDateTime = DateTime.UtcNow,
+                //    SelectedGrade = vm.FinancialReviewDetails.SelectedGrade,
+                //    FinancialDueDate = GetFinancialDueDate(vm),
+                //    FinancialEvidences = await GetFinancialEvidence(vm.ApplicationId),
+                //    Comments = vm.FinancialReviewDetails.Comments
+                //};
+
+                //await _applyApiClient.ReturnFinancialReview(vm.ApplicationId, financialReviewDetails);
+                return RedirectToAction("Application", new { applicationId });
             }
-
-            if (errorMessages.Any())
+            else
             {
-                foreach (var error in errorMessages)
-                {
-                    ModelState.AddModelError(error.Key, error.Value);
-                }
+                var section = await _qnaApiClient.GetSectionBySectionNo(application.ApplicationId, sequenceNo, sectionNo);
 
                 var page = await _qnaApiClient.GetPage(application.ApplicationId, section.Id, pageId);
-                var pageVm = new PageViewModel(applicationId, sequenceNo, sectionNo, pageId, section, page);
-                return View("~/Views/Roatp/Apply/Applications/Page.cshtml", pageVm);
+
+                if (page?.Active is false)
+                {
+                    // DO NOT show any information
+                    page = null;
+                }
+                else if (page.PageOfAnswers != null)
+                {
+                    // Have to do this for applications until we stop adding these in by mistake on RoApply
+                    var excludedAnswers = new List<string> { "ApplicationId", "RedirectAction" };
+                    foreach (var pageOfAnswers in page.PageOfAnswers)
+                    {
+                        pageOfAnswers.Answers = pageOfAnswers.Answers?.Where(ans => !excludedAnswers.Contains(ans.QuestionId)).ToList();
+                    }
+                }
+
+                var newvm = new RoatpPageViewModel(/*applicationId, sequenceNo, sectionNo, pageId, */application, section, page);
+
+                return View("~/Views/Roatp/Apply/Applications/Page.cshtml", newvm);
             }
 
-           var feedback = new QnA.Api.Types.Page.Feedback { Id= Guid.NewGuid(), Message = feedbackMessage, From = "Staff member", Date = DateTime.UtcNow, IsNew = true };
+           // var section = await _qnaApiClient.GetSectionBySectionNo(application.ApplicationId, sequenceNo, sectionNo);
 
-           await _qnaApiClient.UpdateFeedback(application.ApplicationId, section.Id, pageId, feedback);
+           // var errorMessages = new Dictionary<string, string>();
 
-           return RedirectToAction("Section", new { applicationId, sequenceNo, sectionNo });
+           // if (string.IsNullOrWhiteSpace(feedbackMessage))
+           // {
+           //     errorMessages["FeedbackMessage"] = "Please enter a feedback comment";
+           // }
+
+           // if (errorMessages.Any())
+           // {
+           //     foreach (var error in errorMessages)
+           //     {
+           //         ModelState.AddModelError(error.Key, error.Value);
+           //     }
+
+           //     var page = await _qnaApiClient.GetPage(application.ApplicationId, section.Id, pageId);
+           //     var pageVm = new PageViewModel(applicationId, sequenceNo, sectionNo, pageId, section, page);
+           //     return View("~/Views/Roatp/Apply/Applications/Page.cshtml", pageVm);
+           // }
+
+           //var feedback = new QnA.Api.Types.Page.Feedback { Id= Guid.NewGuid(), Message = feedbackMessage, From = "Staff member", Date = DateTime.UtcNow, IsNew = true };
+
+           //await _qnaApiClient.UpdateFeedback(application.ApplicationId, section.Id, pageId, feedback);
+
+           //return RedirectToAction("Section", new { applicationId, sequenceNo, sectionNo });
         }
 
         [HttpPost("/Roatp/Applications/{applicationId}/Sequence/{sequenceNo}/Section/{sectionNo}/Page/{pageId}/{feedbackId}")]
