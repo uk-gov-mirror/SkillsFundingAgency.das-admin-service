@@ -26,31 +26,53 @@
                 <partial name="~/Views/Roatp/Apply/_OrganisationDetails.cshtml" />
 
                 <ul class="govuk-list">
-                    @foreach (var applicationSequence in Model.ApplySequences.OrderBy(x => x.SequenceNo))
+                    @foreach (var applicationSequence in Model.ApplySequences.Where(seq => !seq.NotRequired && seq.IsActive).OrderBy(seq => seq.SequenceNo))
                     {
                         <li>
                             <h2 class="govuk-heading-m">
-                                <a class="govuk-link" href="@Url.Action("Sequence", "RoatpApplication", new {Model.ApplicationId, applicationSequence.SequenceNo})">
-                                    @applicationSequence.Description
-                                </a>
+                                @applicationSequence.Description
                             </h2>
-                            @if (!String.IsNullOrWhiteSpace(applicationSequence.Status))
+
+                            @foreach (var applicationSection in applicationSequence.Sections.Where(sec => !sec.NotRequired).OrderBy(sec => sec.SectionNo))
                             {
-                                <div class="govuk-tag">
-                                    @Html.Raw(applicationSequence.Status)
-                                </div>
+                                var section = Model.Sections.Single(s => s.SectionNo == applicationSection.SectionNo && s.SequenceNo == applicationSequence.SequenceNo);
+
+                                foreach (var pg in section.QnAData.Pages.Where(p => p.Active))
+                                {
+                                    <a class="govuk-link" href="@Url.Action("Page", "RoatpApplication", new {section.ApplicationId, section.SequenceNo, section.SectionNo, pg.PageId})">
+                                        @pg.LinkTitle  @* TODO: Show correct content. *@
+                                    </a>
+
+                                    var applicationPage = applicationSection.Pages?.FirstOrDefault(p => p.PageId == pg.PageId);
+
+                                    @if (!string.IsNullOrWhiteSpace(applicationPage?.ReviewStatus))
+                                    {
+                                        <div class="govuk-tag">
+                                            @Html.Raw(applicationPage.ReviewStatus)
+                                        </div>
+                                    }
+
+                                    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+                                }
                             }
-                            <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
                         </li>
                     }
                 </ul>
 
-                @*@if (Model.ApplySections.All(s => s.Status == ApplicationSectionStatus.Evaluated || s.NotRequired))
-            {
-                <form class="js-disable-on-submit" asp-controller="RoatpApplication" asp-action="Assessment" asp-route-applicationId="@Model.ApplicationId" asp-route-sequenceNo="@Model.SequenceNo" method="get">
-                    <button class="govuk-button" type="submit">Complete review</button>
-                </form>
-            }*@
+                <ul class="govuk-list">
+                    <li>
+                        <h2 class="govuk-heading-m">
+                            Assessor outcome
+                        </h2>
+
+                        <a class="govuk-link" href="#">
+                            @* TODO: Add Assessor Outcome page *@
+                            Confirm assessor outcome
+                        </a>
+
+                        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+                    </li>
+                </ul>
             }
 
             <p class="govuk-body">

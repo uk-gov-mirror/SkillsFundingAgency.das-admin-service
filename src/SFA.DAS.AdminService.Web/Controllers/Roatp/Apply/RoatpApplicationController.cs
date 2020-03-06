@@ -90,114 +90,118 @@ namespace SFA.DAS.AdminService.Web.Controllers.Roatp.Apply
             var activeApplySequence = application.ApplyData.Sequences.OrderBy(seq => seq.SequenceNo).FirstOrDefault();
 
             var sequences = await _qnaApiClient.GetAllApplicationSequences(application.ApplicationId);
+            var sections = await _qnaApiClient.GetAllApplicationSections(application.ApplicationId);
 
             var roatpSequences = await _applyApiClient.GetRoatpSequences();
 
-            var taskListViewModel = new RoatpTaskListViewModel(application, organisation, sequences, application.ApplyData.Sequences, roatpSequences);
+            var taskListViewModel = new RoatpTaskListViewModel(application, organisation, sequences, sections, application.ApplyData.Sequences, roatpSequences);
             return View("~/Views/Roatp/Apply/Applications/TaskList.cshtml", taskListViewModel);
         }
 
         [HttpGet("/Roatp/Applications/{applicationId}/Sequence/{sequenceNo}")]
         public async Task<IActionResult> Sequence(Guid applicationId, int sequenceNo)
         {
-            var application = await _applyApiClient.GetApplication(applicationId);
-            var organisation = await _apiClient.GetOrganisation(application.OrganisationId);
+            return RedirectToAction("Application", new { applicationId });
+            //var application = await _applyApiClient.GetApplication(applicationId);
+            //var organisation = await _apiClient.GetOrganisation(application.OrganisationId);
 
-            await _applyApiClient.StartAssessorReview(applicationId, _contextAccessor.HttpContext.User.UserDisplayName());
+            //await _applyApiClient.StartAssessorReview(applicationId, _contextAccessor.HttpContext.User.UserDisplayName());
 
-            var applySequence = application.ApplyData.Sequences.Single(x => x.SequenceNo == sequenceNo);
+            //var applySequence = application.ApplyData.Sequences.Single(x => x.SequenceNo == sequenceNo);
 
-            var sequence = await _qnaApiClient.GetSequence(application.ApplicationId, applySequence.SequenceId);
-            var sections = await _qnaApiClient.GetSections(application.ApplicationId, sequence.Id);
+            //var sequence = await _qnaApiClient.GetSequence(application.ApplicationId, applySequence.SequenceId);
+            //var sections = await _qnaApiClient.GetSections(application.ApplicationId, sequence.Id);
 
-            var roatpSequences = await _applyApiClient.GetRoatpSequences();
-            var sequenceVm = new RoatpSequenceViewModel(application, organisation, sequence, sections, applySequence.Sections, roatpSequences);
+            //var roatpSequences = await _applyApiClient.GetRoatpSequences();
+            //var sequenceVm = new RoatpSequenceViewModel(application, organisation, sequence, sections, applySequence.Sections, roatpSequences);
 
-            var activeApplicationStatuses = new List<string> { ApplicationStatus.GatewayAssessed, ApplicationStatus.Resubmitted };
+            //var activeApplicationStatuses = new List<string> { ApplicationStatus.GatewayAssessed, ApplicationStatus.Resubmitted };
             
-            if (activeApplicationStatuses.Contains(application.ApplicationStatus))
-            {
-                return View("~/Views/Roatp/Apply/Applications/Sequence.cshtml", sequenceVm);
-            }
-            else
-            {
-                return View("~/Views/Roatp/Apply/Applications/Sequence_ReadOnly.cshtml", sequenceVm);
-            }
+            //if (activeApplicationStatuses.Contains(application.ApplicationStatus))
+            //{
+            //    return View("~/Views/Roatp/Apply/Applications/Sequence.cshtml", sequenceVm);
+            //}
+            //else
+            //{
+            //    return View("~/Views/Roatp/Apply/Applications/Sequence_ReadOnly.cshtml", sequenceVm);
+            //}
         }
 
         [HttpGet("/Roatp/Applications/{applicationId}/Sequence/{sequenceNo}/Section/{sectionNo}")]
         public async Task<IActionResult> Section(Guid applicationId, int sequenceNo, int sectionNo)
         {
-            var application = await _applyApiClient.GetApplication(applicationId);
-            var organisation = await _apiClient.GetOrganisation(application.OrganisationId);
+            return RedirectToAction("Application", new { applicationId });
+            //var application = await _applyApiClient.GetApplication(applicationId);
+            //var organisation = await _apiClient.GetOrganisation(application.OrganisationId);
 
-            var applySequence = application.ApplyData.Sequences.Single(x => x.SequenceNo == sequenceNo);
-            var applySection = applySequence.Sections.Single(x => x.SectionNo == sectionNo);
+            //var applySequence = application.ApplyData.Sequences.Single(x => x.SequenceNo == sequenceNo);
+            //var applySection = applySequence.Sections.Single(x => x.SectionNo == sectionNo);
 
-            var sequence = await _qnaApiClient.GetSequence(application.ApplicationId, applySequence.SequenceId);
-            var section = await _qnaApiClient.GetSection(application.ApplicationId, applySection.SectionId);
+            //var sequence = await _qnaApiClient.GetSequence(application.ApplicationId, applySequence.SequenceId);
+            //var section = await _qnaApiClient.GetSection(application.ApplicationId, applySection.SectionId);
 
-            foreach(var page in section.QnAData.Pages)
-            {
-                var excludedAnswers = new List<string> { "ApplicationId", "RedirectAction" };
-                var excludedQuestions = page.Questions.Where(x => excludedAnswers.Contains(x.QuestionId));
-                foreach(var question in excludedQuestions)
-                {
-                    page.Questions.Remove(question);
-                }
-            }
+            //foreach(var page in section.QnAData.Pages)
+            //{
+            //    var excludedAnswers = new List<string> { "ApplicationId", "RedirectAction" };
+            //    var excludedQuestions = page.Questions.Where(x => excludedAnswers.Contains(x.QuestionId));
+            //    foreach(var question in excludedQuestions)
+            //    {
+            //        page.Questions.Remove(question);
+            //    }
+            //}
 
-            var sectionVm = new RoatpSectionViewModel(application, organisation, section, applySection);
+            //var sectionVm = new RoatpSectionViewModel(application, organisation, section, applySection);
 
-            var activeApplicationStatuses = new List<string> { ApplicationStatus.GatewayAssessed, ApplicationStatus.Resubmitted };
-            var activeSequenceStatuses = new List<string> { ApplicationSequenceStatus.Submitted, ApplicationSequenceStatus.Resubmitted, ApplicationSequenceStatus.InProgress };
-            if (activeApplicationStatuses.Contains(application.ApplicationStatus) && activeSequenceStatuses.Contains(applySequence?.Status))
-            {             
-                if (applySection.Status != ApplicationSectionStatus.Evaluated)
-                {
-                    await _applyApiClient.StartApplicationSectionReview(applicationId, sequence.SequenceNo, section.SectionNo, _contextAccessor.HttpContext.User.UserDisplayName());
-                }
+            //var activeApplicationStatuses = new List<string> { ApplicationStatus.GatewayAssessed, ApplicationStatus.Resubmitted };
+            //var activeSequenceStatuses = new List<string> { ApplicationSequenceStatus.Submitted, ApplicationSequenceStatus.Resubmitted, ApplicationSequenceStatus.InProgress };
+            //if (activeApplicationStatuses.Contains(application.ApplicationStatus) && activeSequenceStatuses.Contains(applySequence?.Status))
+            //{             
+            //    if (applySection.Status != ApplicationSectionStatus.Evaluated)
+            //    {
+            //        await _applyApiClient.StartApplicationSectionReview(applicationId, sequence.SequenceNo, section.SectionNo, _contextAccessor.HttpContext.User.UserDisplayName());
+            //    }
 
-                return View("~/Views/Roatp/Apply/Applications/Section.cshtml", sectionVm);
-            }
-            else
-            {
-                return View("~/Views/Roatp/Apply/Applications/Section_ReadOnly.cshtml", sectionVm);
-            }
+            //    return View("~/Views/Roatp/Apply/Applications/Section.cshtml", sectionVm);
+            //}
+            //else
+            //{
+            //    return View("~/Views/Roatp/Apply/Applications/Section_ReadOnly.cshtml", sectionVm);
+            //}
         }
 
         [HttpPost("/Roatp/Applications/{applicationId}/Sequence/{sequenceNo}/Section/{sectionNo}")]
         public async Task<IActionResult> EvaluateSection(Guid applicationId, int sequenceNo, int sectionNo, bool? isSectionComplete)
         {
-            var errorMessages = new Dictionary<string, string>();
+            return RedirectToAction("Application", new { applicationId });
+            //var errorMessages = new Dictionary<string, string>();
 
-            if (!isSectionComplete.HasValue)
-            {
-                errorMessages["IsSectionComplete"] = "Please state if this section is completed";
-            }
+            //if (!isSectionComplete.HasValue)
+            //{
+            //    errorMessages["IsSectionComplete"] = "Please state if this section is completed";
+            //}
 
-            if (errorMessages.Any())
-            {
-                foreach (var error in errorMessages)
-                {
-                    ModelState.AddModelError(error.Key, error.Value);
-                }
+            //if (errorMessages.Any())
+            //{
+            //    foreach (var error in errorMessages)
+            //    {
+            //        ModelState.AddModelError(error.Key, error.Value);
+            //    }
 
-                var application = await _applyApiClient.GetApplication(applicationId);
-                var organisation = await _apiClient.GetOrganisation(application.OrganisationId);
+            //    var application = await _applyApiClient.GetApplication(applicationId);
+            //    var organisation = await _apiClient.GetOrganisation(application.OrganisationId);
 
-                var applySequence = application.ApplyData.Sequences.Single(x => x.SequenceNo == sequenceNo);
-                var applySection = applySequence.Sections.Single(x => x.SectionNo == sectionNo);
-                
-                var section = await _qnaApiClient.GetSection(application.ApplicationId, applySection.SectionId);
+            //    var applySequence = application.ApplyData.Sequences.Single(x => x.SequenceNo == sequenceNo);
+            //    var applySection = applySequence.Sections.Single(x => x.SectionNo == sectionNo);
 
-                var sectionVm = new RoatpSectionViewModel(application, organisation, section, applySection);
+            //    var section = await _qnaApiClient.GetSection(application.ApplicationId, applySection.SectionId);
 
-                return View("~/Views/Roatp/Apply/Applications/Section.cshtml", sectionVm);
-            }
+            //    var sectionVm = new RoatpSectionViewModel(application, organisation, section, applySection);
 
-            await _applyApiClient.EvaluateSection(applicationId, sequenceNo, sectionNo, isSectionComplete.Value, _contextAccessor.HttpContext.User.UserDisplayName());
-            return RedirectToAction("Sequence", new { applicationId, sequenceNo });
+            //    return View("~/Views/Roatp/Apply/Applications/Section.cshtml", sectionVm);
+            //}
+
+            //await _applyApiClient.EvaluateSection(applicationId, sequenceNo, sectionNo, isSectionComplete.Value, _contextAccessor.HttpContext.User.UserDisplayName());
+            //return RedirectToAction("Sequence", new { applicationId, sequenceNo });
         }
 
         [HttpGet("/Roatp/Applications/{applicationId}/Sequence/{sequenceNo}/Section/{sectionNo}/Page/{pageId}")]
@@ -216,13 +220,24 @@ namespace SFA.DAS.AdminService.Web.Controllers.Roatp.Apply
                 // DO NOT show any information
                 page = null;
             }
+            else if (page.PageOfAnswers != null)
+            {
+                // Have to do this for applications until we stop adding these in by mistake on RoApply
+                var excludedAnswers = new List<string> { "ApplicationId", "RedirectAction" };
+                foreach(var pageOfAnswers in page.PageOfAnswers)
+                {
+                    pageOfAnswers.Answers = pageOfAnswers.Answers?.Where(ans => !excludedAnswers.Contains(ans.QuestionId)).ToList();
+                }
+            }
 
             var pageVm = new PageViewModel(applicationId, sequenceNo, sectionNo, pageId, section, page);
 
-            var activeApplicationStatuses = new List<string> { ApplicationStatus.Submitted, ApplicationStatus.Resubmitted };
-            var activeSequenceStatuses = new List<string> { ApplicationSequenceStatus.Submitted, ApplicationSequenceStatus.Resubmitted };
-            if (activeApplicationStatuses.Contains(application.ApplicationStatus) && activeSequenceStatuses.Contains(applySequence?.Status))
+            var activeApplicationStatuses = new List<string> { ApplicationStatus.GatewayAssessed };
+            var activeAssessorReviewStatuses = new List<string> { AssessorReviewStatus.New, AssessorReviewStatus.InProgress };
+
+            if (activeApplicationStatuses.Contains(application.ApplicationStatus) && activeAssessorReviewStatuses.Contains(application.AssessorReviewStatus))
             {
+                // TODO: Consider moving AssessorReviewStatus to InProgress if not already done
                 return View("~/Views/Roatp/Apply/Applications/Page.cshtml", pageVm);
             }
             else

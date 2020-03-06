@@ -11,7 +11,7 @@ namespace SFA.DAS.AdminService.Web.ViewModels.Apply.Applications
 {
     public class RoatpTaskListViewModel : OrganisationDetailsViewModel
     {
-        public RoatpTaskListViewModel(RoatpApplicationResponse application, Organisation organisation, List<Sequence> sequences, 
+        public RoatpTaskListViewModel(RoatpApplicationResponse application, Organisation organisation, List<Sequence> sequences, List<Section> sections,
                                       List<RoatpApplySequence> applySequences, List<RoatpSequence> roatpSequences)
         {
             ApplicationId = application.ApplicationId;
@@ -39,6 +39,7 @@ namespace SFA.DAS.AdminService.Web.ViewModels.Apply.Applications
 
             ApplySequences = applySequences.Where(x => !x.NotRequired).ToList();
             Sequences = sequences;
+            Sections = sections;
         }
 
         private List<RoatpApplySection> GetRequiredApplySections(List<RoatpApplySection> applySections)
@@ -58,6 +59,7 @@ namespace SFA.DAS.AdminService.Web.ViewModels.Apply.Applications
 
         public string Status { get; set; }
         public List<Sequence> Sequences { get; }
+        public List<Section> Sections { get; }
         public List<RoatpApplySequence> ApplySequences { get; }
         public Guid ApplicationId { get; }
         public int SequenceNo { get; }
