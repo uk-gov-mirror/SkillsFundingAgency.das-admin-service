@@ -105,6 +105,22 @@ namespace SFA.DAS.AssessorService.ApplyTypes.Roatp
         //public string EvaluatedBy { get; set; }
         public bool NotRequired { get; set; }
         //public bool? RequestedFeedbackAnswered { get; set; }
+        public List<RoatpApplyPage> Pages { get; set; }
+    }
+
+    public class RoatpApplyPage
+    {
+        public string PageId { get; set; }
+        public string ReviewStatus { get; set; }
+        public List<RoatpReviewComment> ReviewComments { get; set; }
+    }
+
+    public class RoatpReviewComment
+    {
+        public Guid Id { get; set; }
+        public string From { get; set; }
+        public string Comment { get; set; }
+        public DateTime Date { get; set; }
     }
 
     public class RoatpSequence
