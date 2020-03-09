@@ -35,6 +35,11 @@ namespace SFA.DAS.AdminService.Web.ViewModels.Apply.Applications
                 {
                     sequence.NotRequired = true;
                 }
+                else if(roatpSequence.Id == 2)
+                {
+                    // TODO: RoatpSequences in Apply's appsettings.json needs to be re-adjusted
+                    sequence.NotRequired = true;
+                }
             }
 
             ApplySequences = applySequences.Where(x => !x.NotRequired).ToList();
