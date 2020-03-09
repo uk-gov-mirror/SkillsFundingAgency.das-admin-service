@@ -37,10 +37,31 @@
                             {
                                 var section = Model.Sections.Single(s => s.SectionNo == applicationSection.SectionNo && s.SequenceNo == applicationSequence.SequenceNo);
 
+                                @* NOTE: If it is section 7.6 (DAT section) we need to display it differently *@
+
                                 foreach (var pg in section.QnAData.Pages.Where(p => p.Active))
                                 {
                                     <a class="govuk-link" href="@Url.Action("Page", "RoatpApplication", new {section.ApplicationId, section.SequenceNo, section.SectionNo, pg.PageId})">
-                                        @pg.LinkTitle  @* TODO: Show correct content. *@
+                                        @* TODO: Show correct content as apparently it depends on a number of factors. *@
+                                        @if (pg.DisplayType == "PagesWithSections" || pg.DisplayType == "OtherPagesInPagesWithSections")
+                                        {
+                                            if (!string.IsNullOrEmpty(pg.BodyText))
+                                            {
+                                                @pg.BodyText
+                                            }
+                                            else if(pg.Questions != null && pg.Questions.Any())
+                                            {
+                                                @pg.Questions[0].Label
+                                            }
+                                        }
+                                        else if (pg.Questions != null && pg.Questions.Count == 1)
+                                        {
+                                            @pg.Questions[0].Label
+                                        }
+                                        else
+                                        {
+                                            @pg.Title
+                                        }
                                     </a>
 
                                     var applicationPage = applicationSection.Pages?.FirstOrDefault(p => p.PageId == pg.PageId);
@@ -65,11 +86,24 @@
                             Assessor outcome
                         </h2>
 
+                        @* TODO: Place all of this into an Assessor Outcome page *@
+                        @{
                         <a class="govuk-link" href="#">
-                            @* TODO: Add Assessor Outcome page *@
                             Confirm assessor outcome
                         </a>
 
+                        <div class="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="pass" type="radio" name="outcome" value="Pass">
+                                <label class="govuk-label govuk-radios__label" for="pass">Pass</label>
+                            </div>
+
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="fail" type="radio" name="outcome" value="Fail" />
+                                <label class="govuk-label govuk-radios__label" for="fail">Fail / Clarification</label>
+                            </div>
+                        </div>
+                        }
                         <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
                     </li>
                 </ul>
