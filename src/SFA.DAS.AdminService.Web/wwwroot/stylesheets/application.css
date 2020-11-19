@@ -1676,12 +1676,6 @@ TODO: change to 'das-page-navigation' and BEM
   line-height: 1;
 }
 
-.das-button--inline-link:focus {
-  outline: 3px solid #ffbf47;
-  outline-offset: 0;
-  background-color: #ffbf47;
-}
-
 .das-button--inline-link:link {
   color: #1d70b8;
 }
@@ -1700,6 +1694,8 @@ TODO: change to 'das-page-navigation' and BEM
 }
 
 .das-button--inline-link:focus {
+  outline: 3px solid #ffbf47;
+  outline-offset: 0;
   color: #0b0c0c;
   background-color: #ffbf47;
 }
