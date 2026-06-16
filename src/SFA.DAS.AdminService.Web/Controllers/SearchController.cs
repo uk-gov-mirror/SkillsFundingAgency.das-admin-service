@@ -12,12 +12,14 @@ using SFA.DAS.AssessorService.Api.Types.Models;
 using SFA.DAS.AdminService.Web.Infrastructure;
 using SFA.DAS.AssessorService.Domain.Entities;
 using SFA.DAS.AdminService.Common.Extensions;
+using SFA.DAS.AdminService.Web.Orchestrators;
 using SFA.DAS.AssessorService.Api.Types.Models.Certificates;
 using Microsoft.AspNetCore.Http;
 using SFA.DAS.AssessorService.Api.Types.Enums;
 using System.Linq;
 using System;
 using SFA.DAS.AssessorService.Api.Types.Models.FrameworkSearch;
+using SFA.DAS.AdminService.Common.Models;
 
 namespace SFA.DAS.AdminService.Web.Controllers
 {
@@ -32,16 +34,18 @@ namespace SFA.DAS.AdminService.Web.Controllers
         private readonly IFrameworkSearchSessionService _sessionService;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _contextAccessor;
+        private readonly ISearchOrchestrator _searchOrchestrator;
 
         public SearchController(
-            ILearnerDetailsApiClient learnerDetailsApiClient, 
-            IRegisterApiClient registerApiClient, 
+            ILearnerDetailsApiClient learnerDetailsApiClient,
+            IRegisterApiClient registerApiClient,
             IStaffSearchApiClient staffSearchApiClient,
-            IFrameworkSearchSessionService sessionService, 
+            IFrameworkSearchSessionService sessionService,
             ICertificateApiClient certificateApiClient,
             IScheduleApiClient scheduleApiClient,
             IMapper mapper,
-            IHttpContextAccessor contextAccessor)
+            IHttpContextAccessor contextAccessor,
+            ISearchOrchestrator searchOrchestrator)
         {
             _learnerDetailsApiClient = learnerDetailsApiClient;
             _registerApiClient = registerApiClient;
@@ -51,12 +55,58 @@ namespace SFA.DAS.AdminService.Web.Controllers
             _scheduleApiClient = scheduleApiClient;
             _mapper = mapper;
             _contextAccessor = contextAccessor;
+            _searchOrchestrator = searchOrchestrator;
         }
 
         [HttpGet]
         public IActionResult Index(SearchInputViewModel vm)
         {
             return View(vm ?? new SearchInputViewModel());
+        }
+
+        [HttpGet]
+        [ModelStatePersist(ModelStatePersist.RestoreEntry)]
+        public IActionResult DigitalAccessReferenceSearch()
+        {
+            return View(new DigitalAccessReferenceViewModel());
+        }
+
+        [HttpPost]
+        [ModelStatePersist(ModelStatePersist.Store)]
+        public async Task<IActionResult> DigitalAccessReferenceSearch(DigitalAccessReferenceViewModel vm, int page = 1)
+        {
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction(nameof(DigitalAccessReferenceSearch));
+            }
+
+            var username = _contextAccessor.HttpContext.User.UserId();
+
+            var resultVm = await _searchOrchestrator.FindUserActionByReference(vm.ReferenceNumber, username);
+
+            if (resultVm?.Result == null)
+            {
+                ModelState.AddModelError("ReferenceNumber", "No records found with this reference number");
+                return RedirectToAction(nameof(DigitalAccessReferenceSearch));
+            }
+
+            // TODO: Implement per-`ActionType` redirects as part of upcoming tickets
+            // Current placeholders route to existing actions; replace with dedicated pages in follow-up work.
+            switch (resultVm.Result.ActionType)
+            {
+                case ActionType.Reprint:
+
+                case ActionType.Help:
+
+                case ActionType.Contact:
+
+                case ActionType.NotMatched:
+
+                case ActionType.NotFound:
+                    return View(vm);
+            }
+
+            return View(resultVm);
         }
 
         [HttpGet]
@@ -156,7 +206,7 @@ namespace SFA.DAS.AdminService.Web.Controllers
             int? batchNumber = null)
         {
             var learner = await _learnerDetailsApiClient.GetLearnerDetail(stdCode, uln, allLogs);
-            
+
             var vm = new StandardLearnerDetailsViewModel
             {
                 Learner = learner,
@@ -207,13 +257,13 @@ namespace SFA.DAS.AdminService.Web.Controllers
         public async Task<IActionResult> FrameworkLearnerDetails(Guid? frameworkLearnerId = null, int? batchNumber = null, bool allLogs = false)
         {
             FrameworkSearchSession sessionModel;
-            GetFrameworkLearnerResponse frameworkLearnerDetails; 
+            GetFrameworkLearnerResponse frameworkLearnerDetails;
             if (frameworkLearnerId.HasValue)
             {
                 frameworkLearnerDetails = await _learnerDetailsApiClient.GetFrameworkLearner(frameworkLearnerId.Value, allLogs);
             }
             else
-            { 
+            {
                 sessionModel = _sessionService.SessionFrameworkSearch;
                 if (sessionModel == null || !sessionModel.SelectedFrameworkLearnerId.HasValue)
                 {
@@ -223,9 +273,9 @@ namespace SFA.DAS.AdminService.Web.Controllers
                 frameworkLearnerDetails = await _learnerDetailsApiClient.GetFrameworkLearner(sessionModel.SelectedFrameworkLearnerId.Value, allLogs);
             }
 
-            var viewModel = _mapper.Map<FrameworkLearnerDetailsViewModel>(frameworkLearnerDetails); 
+            var viewModel = _mapper.Map<FrameworkLearnerDetailsViewModel>(frameworkLearnerDetails);
             viewModel.ShowDetails = !allLogs;
-            viewModel.BatchNumber = batchNumber; 
+            viewModel.BatchNumber = batchNumber;
 
             return View(viewModel);
         }
@@ -244,7 +294,7 @@ namespace SFA.DAS.AdminService.Web.Controllers
                     });
 
                     return RedirectToAction(nameof(FrameworkMultipleResults));
-                } 
+                }
                 _sessionService.ClearFrameworkSearchRequest();
             }
 
@@ -308,9 +358,9 @@ namespace SFA.DAS.AdminService.Web.Controllers
                 return backToCheckAnswers ? RedirectToAction(nameof(FrameworkReprintCheckDetails)) : RedirectToAction(nameof(FrameworkReprintAddress));
             }
             else
-            { 
-                return RedirectToAction(nameof(FrameworkReprintReason), new { backToCheckAnswers});   
-            }  
+            {
+                return RedirectToAction(nameof(FrameworkReprintReason), new { backToCheckAnswers });
+            }
         }
 
         [HttpGet]
@@ -354,7 +404,7 @@ namespace SFA.DAS.AdminService.Web.Controllers
             }
             else
             {
-                return RedirectToAction(nameof(FrameworkReprintAddress), new { backToCheckAnswers});
+                return RedirectToAction(nameof(FrameworkReprintAddress), new { backToCheckAnswers });
             }
         }
 
@@ -408,7 +458,7 @@ namespace SFA.DAS.AdminService.Web.Controllers
             await _certificateApiClient.ReprintFramework(reprintFrameworkRequest);
 
             _sessionService.ClearFrameworkSearchRequest();
-            
+
             return RedirectToAction(nameof(FrameworkReprintSubmitted));
         }
 
@@ -422,7 +472,6 @@ namespace SFA.DAS.AdminService.Web.Controllers
         private static ReprintReasons? ParseReprintReasons(List<string> reasons)
         {
             var reprintReasons = string.Join(",", reasons.Where(p => !p.Equals("Other")).ToList());
-            
             return !string.IsNullOrWhiteSpace(reprintReasons)
                 ? (ReprintReasons?)Enum.Parse(typeof(ReprintReasons), reprintReasons)
                 : null;
