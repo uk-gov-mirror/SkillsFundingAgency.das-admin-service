@@ -8,23 +8,23 @@ using Moq;
 using NUnit.Framework;
 using SFA.DAS.AdminService.Application.Commands.CheckUserActionByCode;
 using SFA.DAS.AdminService.Infrastructure.Api.Responses;
-using SFA.DAS.AdminService.Infrastructure.ApiClients.DigitalCertificates;
+using SFA.DAS.AdminService.Infrastructure.ApiClients.Admin;
 
 namespace SFA.DAS.AdminService.Application.UnitTests.Commands.CheckUserActionByCode
 {
     [TestFixture]
     public class CheckUserActionByCodeCommandHandlerTests
     {
-        private Mock<IDigitalCertificatesOuterApi> _digitalApiMock;
+        private Mock<IAdminOuterApi> _adminApiMock;
         private Mock<ILogger<CheckUserActionByCodeCommandHandler>> _loggerMock;
         private CheckUserActionByCodeCommandHandler _handler;
 
         [SetUp]
         public void SetUp()
         {
-            _digitalApiMock = new Mock<IDigitalCertificatesOuterApi>();
+            _adminApiMock = new Mock<IAdminOuterApi>();
             _loggerMock = new Mock<ILogger<CheckUserActionByCodeCommandHandler>>();
-            _handler = new CheckUserActionByCodeCommandHandler(_digitalApiMock.Object, _loggerMock.Object);
+            _handler = new CheckUserActionByCodeCommandHandler(_adminApiMock.Object, _loggerMock.Object);
         }
 
         [Test]
@@ -46,7 +46,7 @@ namespace SFA.DAS.AdminService.Application.UnitTests.Commands.CheckUserActionByC
                 AdminActions = new List<AdminActionResponse> { new AdminActionResponse { Username = "admin", ActionTime = DateTime.UtcNow, Action = "Viewed" } }
             };
 
-            _digitalApiMock.Setup(x => x.CheckUserActionByCode("code123", It.IsAny<Infrastructure.Api.Requests.CheckUserActionByCodeRequest>()))
+            _adminApiMock.Setup(x => x.CheckUserActionByCode("code123", It.IsAny<Infrastructure.Api.Requests.CheckUserActionByCodeRequest>()))
                 .ReturnsAsync(response);
 
             var result = await _handler.Handle(new CheckUserActionByCodeCommand { Code = "code123", Username = "user1" }, CancellationToken.None);
@@ -73,21 +73,21 @@ namespace SFA.DAS.AdminService.Application.UnitTests.Commands.CheckUserActionByC
                 ActionStatus = "New"
             };
 
-            _digitalApiMock.Setup(x => x.CheckUserActionByCode(It.IsAny<string>(), It.IsAny<Infrastructure.Api.Requests.CheckUserActionByCodeRequest>()))
+            _adminApiMock.Setup(x => x.CheckUserActionByCode(It.IsAny<string>(), It.IsAny<Infrastructure.Api.Requests.CheckUserActionByCodeRequest>()))
                 .ReturnsAsync(response);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            _digitalApiMock.Verify(x => x.CheckUserActionByCode("code123", It.Is<Infrastructure.Api.Requests.CheckUserActionByCodeRequest>(r => r.Username == "user1")), Times.Once);
+            _adminApiMock.Verify(x => x.CheckUserActionByCode("code123", It.Is<Infrastructure.Api.Requests.CheckUserActionByCodeRequest>(r => r.Username == "user1")), Times.Once);
         }
 
         [Test]
         public void Handle_Throws_If_OuterApi_Fails()
         {
             // Arrange
-            _digitalApiMock.Setup(x => x.CheckUserActionByCode(It.IsAny<string>(), It.IsAny<Infrastructure.Api.Requests.CheckUserActionByCodeRequest>()))
+            _adminApiMock.Setup(x => x.CheckUserActionByCode(It.IsAny<string>(), It.IsAny<Infrastructure.Api.Requests.CheckUserActionByCodeRequest>()))
                 .ThrowsAsync(new Exception("API failure"));
 
             // Act

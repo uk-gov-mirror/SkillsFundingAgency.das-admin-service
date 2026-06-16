@@ -12,8 +12,8 @@ namespace SFA.DAS.AdminService.Web.StartupExtensions
         public static void AddConfigurationOptions(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddOptions();
-            services.Configure<DigitalCertificatesOuterApiConfiguration>(configuration.GetSection(nameof(DigitalCertificatesOuterApiConfiguration)));
-            services.AddSingleton(cfg => cfg.GetRequiredService<IOptions<DigitalCertificatesOuterApiConfiguration>>().Value);
+            services.Configure<AdminOuterApiConfiguration>(configuration.GetSection(nameof(AdminOuterApiConfiguration)));
+            services.AddSingleton(cfg => cfg.GetRequiredService<IOptions<AdminOuterApiConfiguration>>().Value);
         }
     }
 }

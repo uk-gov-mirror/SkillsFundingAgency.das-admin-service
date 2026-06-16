@@ -2,18 +2,18 @@
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using SFA.DAS.AdminService.Infrastructure.ApiClients.DigitalCertificates;
+using SFA.DAS.AdminService.Infrastructure.ApiClients.Admin;
 
 namespace SFA.DAS.AdminService.Application.Commands.CheckUserActionByCode
 {
     public class CheckUserActionByCodeCommandHandler : IRequestHandler<CheckUserActionByCodeCommand, CheckUserActionByCodeCommandResult>
     {
-        private readonly IDigitalCertificatesOuterApi _digitalCertificatesOuterApi;
+        private readonly IAdminOuterApi _adminOuterApi;
         private readonly ILogger<CheckUserActionByCodeCommandHandler> _logger;
 
-        public CheckUserActionByCodeCommandHandler(IDigitalCertificatesOuterApi digitalCertificatesOuterApi, ILogger<CheckUserActionByCodeCommandHandler> logger)
+        public CheckUserActionByCodeCommandHandler(IAdminOuterApi adminOuterApi, ILogger<CheckUserActionByCodeCommandHandler> logger)
         {
-            _digitalCertificatesOuterApi = digitalCertificatesOuterApi;
+            _adminOuterApi = adminOuterApi;
             _logger = logger;
         }
 
@@ -21,7 +21,7 @@ namespace SFA.DAS.AdminService.Application.Commands.CheckUserActionByCode
         {
             try
             {
-                var response = await _digitalCertificatesOuterApi.CheckUserActionByCode(request.Code, request);
+                var response = await _adminOuterApi.CheckUserActionByCode(request.Code, request);
                 return response;
             }
             catch (System.Exception ex)

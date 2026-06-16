@@ -141,11 +141,11 @@ namespace SFA.DAS.AdminService.Web
                 opt.IdleTimeout = TimeSpan.FromHours(1);
             });
 
-            var outerApiConfiguration = Configuration.GetSection(nameof(DigitalCertificatesOuterApiConfiguration))
-                .Get<DigitalCertificatesOuterApiConfiguration>();
+            var outerApiConfiguration = Configuration.GetSection(nameof(AdminOuterApiConfiguration))
+                .Get<AdminOuterApiConfiguration>();
 
             if (outerApiConfiguration == null)
-                throw new InvalidOperationException("Missing DigitalCertificatesOuterApiConfiguration");
+                throw new InvalidOperationException("Missing AdminOuterApiConfiguration");
 
             services.AddOuterApi(outerApiConfiguration);
 
