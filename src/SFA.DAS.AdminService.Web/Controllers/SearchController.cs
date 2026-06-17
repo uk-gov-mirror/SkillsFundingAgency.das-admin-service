@@ -35,6 +35,9 @@ namespace SFA.DAS.AdminService.Web.Controllers
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly ISearchOrchestrator _searchOrchestrator;
+        public const string UserNotFoundRouteGet = nameof(UserNotFoundRouteGet);
+        public const string DigitalAccessReferenceSearchRouteGet = nameof(DigitalAccessReferenceSearchRouteGet);
+        public const string DigitalAccessReferenceSearchRoutePost = nameof(DigitalAccessReferenceSearchRoutePost);
 
         public SearchController(
             ILearnerDetailsApiClient learnerDetailsApiClient,
@@ -64,30 +67,30 @@ namespace SFA.DAS.AdminService.Web.Controllers
             return View(vm ?? new SearchInputViewModel());
         }
 
-        [HttpGet]
+        [HttpGet("digital-access-reference", Name = DigitalAccessReferenceSearchRouteGet)]
         [ModelStatePersist(ModelStatePersist.RestoreEntry)]
         public IActionResult DigitalAccessReferenceSearch()
         {
             return View(new DigitalAccessReferenceViewModel());
         }
 
-        [HttpPost]
+        [HttpPost("digital-access-reference", Name = DigitalAccessReferenceSearchRoutePost)]
         [ModelStatePersist(ModelStatePersist.Store)]
         public async Task<IActionResult> DigitalAccessReferenceSearch(DigitalAccessReferenceViewModel vm, int page = 1)
         {
             if (!ModelState.IsValid)
             {
-                return RedirectToAction(nameof(DigitalAccessReferenceSearch));
+                return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);
             }
 
             var username = _contextAccessor.HttpContext.User.UserId();
 
-            var resultVm = await _searchOrchestrator.FindUserActionByReference(vm.ReferenceNumber, username);
+            var resultVm = await _searchOrchestrator.GetDigitalAccessReferenceViewModel(vm.ReferenceNumber, username);
 
             if (resultVm?.Result == null)
             {
                 ModelState.AddModelError("ReferenceNumber", "No records found with this reference number");
-                return RedirectToAction(nameof(DigitalAccessReferenceSearch));
+                return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);
             }
 
             // TODO: Implement per-`ActionType` redirects as part of upcoming tickets
@@ -95,18 +98,23 @@ namespace SFA.DAS.AdminService.Web.Controllers
             switch (resultVm.Result.ActionType)
             {
                 case ActionType.Reprint:
-
                 case ActionType.Help:
-
                 case ActionType.Contact:
-
                 case ActionType.NotMatched:
 
                 case ActionType.NotFound:
-                    return View(vm);
+                    return RedirectToRoute(UserNotFoundRouteGet, new { referenceNumber = resultVm.ReferenceNumber });
             }
 
             return View(resultVm);
+        }
+
+        [HttpGet("digital-access-reference/user-not-found/{referenceNumber}", Name = UserNotFoundRouteGet)]
+        public async Task<IActionResult> UserNotFound(string referenceNumber)
+        {
+            var username = _contextAccessor.HttpContext.User.UserId();
+            var vm = await _searchOrchestrator.GetUserNotFoundViewModel(referenceNumber, username);
+            return View(vm ?? new UserNotFoundViewModel { ReferenceNumber = referenceNumber });
         }
 
         [HttpGet]

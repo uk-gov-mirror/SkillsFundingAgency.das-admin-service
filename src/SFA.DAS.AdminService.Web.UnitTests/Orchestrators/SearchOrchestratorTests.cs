@@ -32,7 +32,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             _mediatorMock.Setup(m => m.Send(It.IsAny<CheckUserActionByCodeCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((CheckUserActionByCodeCommandResult)null);
 
-            var vm = await _sut.FindUserActionByReference("ref1", "user1");
+            var vm = await _sut.GetDigitalAccessReferenceViewModel("ref1", "user1");
 
             vm.Should().NotBeNull();
             vm.ReferenceNumber.Should().Be("ref1");
@@ -64,7 +64,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             _mediatorMock.Setup(m => m.Send(It.IsAny<CheckUserActionByCodeCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(response);
 
-            var vm = await _sut.FindUserActionByReference("ref2", "user2");
+            var vm = await _sut.GetDigitalAccessReferenceViewModel("ref2", "user2");
 
             vm.Should().NotBeNull();
             vm.ReferenceNumber.Should().Be("ref2");
@@ -78,6 +78,40 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             vm.Result.AdminActions.Count.Should().Be(1);
             vm.Result.AdminActions[0].Username.Should().Be("admin");
             vm.Result.AdminActions[0].Action.Should().Be(AdminActionType.Viewed);
+        }
+
+        [Test]
+        public async Task GetUserNotFoundViewModel_ReturnsReferenceOnly_WhenMediatorReturnsNull()
+        {
+            _mediatorMock.Setup(m => m.Send(It.IsAny<CheckUserActionByCodeCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((CheckUserActionByCodeCommandResult)null);
+
+            var vm = await _sut.GetUserNotFoundViewModel("ref3", "user3");
+
+            vm.Should().NotBeNull();
+            vm.ReferenceNumber.Should().Be("ref3");
+            vm.FirstName.Should().BeNullOrEmpty();
+            vm.LastName.Should().BeNullOrEmpty();
+        }
+
+        [Test]
+        public async Task GetUserNotFoundViewModel_ReturnsNames_WhenMediatorReturnsResult()
+        {
+            var response = new CheckUserActionByCodeCommandResult
+            {
+                GivenNames = "Diane",
+                FamilyName = "Lockhart"
+            };
+
+            _mediatorMock.Setup(m => m.Send(It.IsAny<CheckUserActionByCodeCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(response);
+
+            var vm = await _sut.GetUserNotFoundViewModel("ref4", "user4");
+
+            vm.Should().NotBeNull();
+            vm.ReferenceNumber.Should().Be("ref4");
+            vm.FirstName.Should().Be("Diane");
+            vm.LastName.Should().Be("Lockhart");
         }
     }
 }

@@ -5,6 +5,7 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
 {
     public interface ISearchOrchestrator
     {
-        Task<DigitalAccessReferenceViewModel> FindUserActionByReference(string reference, string username);
+        Task<DigitalAccessReferenceViewModel> GetDigitalAccessReferenceViewModel(string reference, string username);
+        Task<UserNotFoundViewModel> GetUserNotFoundViewModel(string reference, string username);
     }
 }

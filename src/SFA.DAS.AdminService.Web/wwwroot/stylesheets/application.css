@@ -1869,3 +1869,13 @@ TODO: change to 'das-page-navigation' and BEM
 .padding-bottom-30 {
     padding-bottom: 30px;
 }
+
+.app-user-not-matched-inset {
+    background-color: #f3f2f1;
+    border-left: 10px solid #1d70b8;
+    padding: 20px;
+}
+
+.app-user-not-matched-inset__heading {
+    font-weight: 600;
+}

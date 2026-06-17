@@ -18,7 +18,7 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
             _mediator = mediator;
         }
 
-        public async Task<DigitalAccessReferenceViewModel> FindUserActionByReference(string reference, string username)
+        public async Task<DigitalAccessReferenceViewModel> GetDigitalAccessReferenceViewModel(string reference, string username)
         {
             var result = await _mediator.Send(new CheckUserActionByCodeCommand { Code = reference, Username = username });
 
@@ -46,6 +46,21 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
             };
 
             return vm;
+        }
+
+        public async Task<UserNotFoundViewModel> GetUserNotFoundViewModel(string reference, string username)
+        {
+            var result = await _mediator.Send(new CheckUserActionByCodeCommand { Code = reference, Username = username });
+
+            if (result == null)
+                return new UserNotFoundViewModel { ReferenceNumber = reference };
+
+            return new UserNotFoundViewModel
+            {
+                ReferenceNumber = reference,
+                FirstName = result.GivenNames,
+                LastName = result.FamilyName
+            };
         }
     }
 }
