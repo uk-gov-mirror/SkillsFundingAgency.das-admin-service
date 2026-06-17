@@ -30,12 +30,12 @@ namespace SFA.DAS.AdminService.Web.Controllers
         [ModelStatePersist(ModelStatePersist.RestoreEntry)]
         public IActionResult DigitalAccessReferenceSearch()
         {
-            return View(new DigitalAccessReferenceViewModel());
+            return View(new DigitalAccessReferenceSearchViewModel());
         }
 
         [HttpPost("digital-access/reference", Name = DigitalAccessReferenceSearchRoutePost)]
         [ModelStatePersist(ModelStatePersist.Store)]
-        public async Task<IActionResult> DigitalAccessReferenceSearch(DigitalAccessReferenceViewModel vm, int page = 1)
+        public async Task<IActionResult> DigitalAccessReferenceSearch(DigitalAccessReferenceSearchViewModel vm, int page = 1)
         {
             if (!ModelState.IsValid)
             {
@@ -46,13 +46,13 @@ namespace SFA.DAS.AdminService.Web.Controllers
 
             var resultVm = await _orchestrator.GetDigitalAccessReferenceViewModel(vm.ReferenceNumber, username);
 
-            if (resultVm?.Result == null)
+            if (resultVm == null)
             {
                 ModelState.AddModelError("ReferenceNumber", "No records found with this reference number");
                 return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);
             }
 
-            switch (resultVm.Result.ActionType)
+            switch (resultVm.ActionType)
             {
                 case ActionType.Reprint:
                 case ActionType.Help:

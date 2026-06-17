@@ -27,16 +27,14 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
         }
 
         [Test]
-        public async Task FindUserActionByReference_ReturnsReferenceOnly_WhenMediatorReturnsNull()
+        public async Task FindUserActionByReference_ReturnsNull_WhenMediatorReturnsNull()
         {
             _mediatorMock.Setup(m => m.Send(It.IsAny<CheckUserActionByCodeCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((CheckUserActionByCodeCommandResult)null);
 
             var vm = await _sut.GetDigitalAccessReferenceViewModel("ref1", "user1");
 
-            vm.Should().NotBeNull();
-            vm.ReferenceNumber.Should().Be("ref1");
-            vm.Result.Should().BeNull();
+            vm.Should().BeNull();
         }
 
         [Test]
@@ -68,16 +66,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
 
             vm.Should().NotBeNull();
             vm.ReferenceNumber.Should().Be("ref2");
-            vm.Result.Should().NotBeNull();
-            vm.Result.Id.Should().Be(response.Id);
-            vm.Result.UserId.Should().Be(response.UserId);
-            vm.Result.ActionType.Should().Be(response.ActionType);
-            vm.Result.ActionStatus.Should().Be(response.ActionStatus);
-            vm.Result.FamilyName.Should().Be(response.FamilyName);
-            vm.Result.AdminActions.Should().NotBeNull();
-            vm.Result.AdminActions.Count.Should().Be(1);
-            vm.Result.AdminActions[0].Username.Should().Be("admin");
-            vm.Result.AdminActions[0].Action.Should().Be(AdminActionType.Viewed);
+            vm.ActionType.Should().Be(response.ActionType);
         }
 
         [Test]

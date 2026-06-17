@@ -6,20 +6,20 @@ using SFA.DAS.AdminService.Web.ViewModels.Search;
 namespace SFA.DAS.AdminService.Web.UnitTests.Validators
 {
     [TestFixture]
-    public class DigitalAccessReferenceViewModelValidatorTests
+    public class DigitalAccessReferenceSearchViewModelValidatorTests
     {
-        private DigitalAccessReferenceViewModelValidator _validator;
+        private DigitalAccessReferenceSearchViewModelValidator _validator;
 
         [SetUp]
         public void SetUp()
         {
-            _validator = new DigitalAccessReferenceViewModelValidator();
+            _validator = new DigitalAccessReferenceSearchViewModelValidator();
         }
 
         [Test]
         public void ReferenceNumber_Null_HasError()
         {
-            var vm = new DigitalAccessReferenceViewModel { ReferenceNumber = null };
+            var vm = new DigitalAccessReferenceSearchViewModel { ReferenceNumber = null };
             var result = _validator.TestValidate(vm);
             result.ShouldHaveValidationErrorFor(x => x.ReferenceNumber).WithErrorMessage("Enter reference number");
         }
@@ -27,7 +27,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Validators
         [Test]
         public void ReferenceNumber_Empty_HasError()
         {
-            var vm = new DigitalAccessReferenceViewModel { ReferenceNumber = string.Empty };
+            var vm = new DigitalAccessReferenceSearchViewModel { ReferenceNumber = string.Empty };
             var result = _validator.TestValidate(vm);
             result.ShouldHaveValidationErrorFor(x => x.ReferenceNumber).WithErrorMessage("Enter reference number");
         }
@@ -35,7 +35,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Validators
         [Test]
         public void ReferenceNumber_NonAlphanumeric_HasError()
         {
-            var vm = new DigitalAccessReferenceViewModel { ReferenceNumber = "ABC-123" };
+            var vm = new DigitalAccessReferenceSearchViewModel { ReferenceNumber = "ABC-123" };
             var result = _validator.TestValidate(vm);
             result.ShouldHaveValidationErrorFor(x => x.ReferenceNumber).WithErrorMessage("Digital access reference numbers must be alphanumeric");
         }
@@ -43,7 +43,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Validators
         [Test]
         public void ReferenceNumber_Alphanumeric_NoError()
         {
-            var vm = new DigitalAccessReferenceViewModel { ReferenceNumber = "ABC123" };
+            var vm = new DigitalAccessReferenceSearchViewModel { ReferenceNumber = "ABC123" };
             var result = _validator.TestValidate(vm);
             result.ShouldNotHaveValidationErrorFor(x => x.ReferenceNumber);
         }

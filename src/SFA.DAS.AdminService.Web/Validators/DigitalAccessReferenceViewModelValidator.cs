@@ -4,9 +4,9 @@ using System.Text.RegularExpressions;
 
 namespace SFA.DAS.AdminService.Web.Validators
 {
-    public class DigitalAccessReferenceViewModelValidator : AbstractValidator<DigitalAccessReferenceViewModel>
+    public class DigitalAccessReferenceSearchViewModelValidator : AbstractValidator<DigitalAccessReferenceSearchViewModel>
     {
-        public DigitalAccessReferenceViewModelValidator()
+        public DigitalAccessReferenceSearchViewModelValidator()
         {
             RuleFor(x => x.ReferenceNumber)
                 .Cascade(CascadeMode.Stop)

@@ -23,7 +23,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.Home
 
             // Assert
             var viewResult = result.Should().BeOfType<ViewResult>().Subject;
-            viewResult.Model.Should().BeOfType<DigitalAccessReferenceViewModel>().Which.ReferenceNumber.Should().BeEmpty();
+            viewResult.Model.Should().BeOfType<DigitalAccessReferenceSearchViewModel>().Which.ReferenceNumber.Should().BeEmpty();
         }
 
         [Test]
@@ -32,7 +32,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.Home
             // Arrange
             var controller = new DigitalAccessController(_httpContextAccessorMock.Object, _digitalAccessOrchestratorMock.Object);
             controller.ModelState.AddModelError("ReferenceNumber", "Enter reference");
-            var vm = new DigitalAccessReferenceViewModel { ReferenceNumber = "ABC123" };
+            var vm = new DigitalAccessReferenceSearchViewModel { ReferenceNumber = "ABC123" };
 
             // Act
             var result = await controller.DigitalAccessReferenceSearch(vm);
@@ -46,9 +46,9 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.Home
         public async Task DigitalAccessReferenceSearch_Post_OrchestratorReturnsNull_AddsModelErrorAndReturnsView()
         {
             // Arrange
-            var vm = new DigitalAccessReferenceViewModel { ReferenceNumber = "ABC123" };
+            var vm = new DigitalAccessReferenceSearchViewModel { ReferenceNumber = "ABC123" };
             _digitalAccessOrchestratorMock.Setup(x => x.GetDigitalAccessReferenceViewModel(vm.ReferenceNumber, It.IsAny<string>()))
-                .ReturnsAsync((DigitalAccessReferenceViewModel)null);
+                .ReturnsAsync((DigitalAccessReferenceSearchViewModel)null);
 
             // Act
             var controller = new DigitalAccessController(_httpContextAccessorMock.Object, _digitalAccessOrchestratorMock.Object);
@@ -65,11 +65,11 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.Home
         public async Task DigitalAccessReferenceSearch_Post_OrchestratorReturnsNotFound_RedirectsToUserNotFound()
         {
             // Arrange
-            var vm = new DigitalAccessReferenceViewModel { ReferenceNumber = "ABC123" };
-            var resultVm = new DigitalAccessReferenceViewModel
+            var vm = new DigitalAccessReferenceSearchViewModel { ReferenceNumber = "ABC123" };
+            var resultVm = new DigitalAccessReferenceSearchViewModel
             {
                 ReferenceNumber = vm.ReferenceNumber,
-                Result = new UserActionResponse { ActionType = ActionType.NotFound }
+                ActionType = ActionType.NotFound
             };
 
             _digitalAccessOrchestratorMock.Setup(x => x.GetDigitalAccessReferenceViewModel(vm.ReferenceNumber, It.IsAny<string>()))
