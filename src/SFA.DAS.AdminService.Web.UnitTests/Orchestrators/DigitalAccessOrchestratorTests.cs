@@ -14,16 +14,16 @@ using SFA.DAS.AdminService.Common.Models;
 namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
 {
     [TestFixture]
-    public class SearchOrchestratorTests
+    public class DigitalAccessOrchestratorTests
     {
         private Mock<IMediator> _mediatorMock;
-        private SearchOrchestrator _sut;
+        private DigitalAccessOrchestrator _sut;
 
         [SetUp]
         public void SetUp()
         {
             _mediatorMock = new Mock<IMediator>();
-            _sut = new SearchOrchestrator(_mediatorMock.Object);
+            _sut = new DigitalAccessOrchestrator(_mediatorMock.Object);
         }
 
         [Test]

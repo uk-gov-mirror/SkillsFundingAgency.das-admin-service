@@ -233,7 +233,7 @@ namespace SFA.DAS.AdminService.Web
 
             services.AddTransient<ICsvExportService, CsvExportService>();
 
-            services.AddTransient<ISearchOrchestrator, SearchOrchestrator>();
+            services.AddTransient<IDigitalAccessOrchestrator, DigitalAccessOrchestrator>();
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CheckUserActionByCodeCommand).Assembly));
 
             Common.DependencyInjection.ConfigureDependencyInjection(services);

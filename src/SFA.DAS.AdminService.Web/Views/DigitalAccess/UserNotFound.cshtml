@@ -1,11 +1,12 @@
 ﻿@using SFA.DAS.AdminService.Web.ViewModels.Search
+@using SFA.DAS.AdminService.Web.Controllers
 @model UserNotFoundViewModel
 @{
     ViewBag.Title = "User not found";
     Layout = "_Layout";
 }
 
-<a asp-action="DigitalAccessReferenceSearch" asp-controller="Search" class="govuk-back-link">Back</a>
+<a asp-route="@DigitalAccessController.DigitalAccessReferenceSearchRouteGet" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper " id="main-content" role="main">
     <div class="govuk-grid-row">

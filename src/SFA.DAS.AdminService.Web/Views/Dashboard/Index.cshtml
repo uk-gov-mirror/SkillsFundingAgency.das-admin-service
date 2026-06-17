@@ -1,8 +1,9 @@
-﻿@using SFA.DAS.AdminService.Web.Domain
-@using SFA.DAS.AdminService.Common.Extensions.TagHelpers;
-@using Microsoft.AspNetCore.Http;
+﻿@using FeatureToggles = SFA.DAS.AdminService.Web.Domain.FeatureToggles
 @using Microsoft.AspNetCore.Authorization;
-@using FeatureToggles = SFA.DAS.AdminService.Web.Domain.FeatureToggles
+@using Microsoft.AspNetCore.Http;
+@using SFA.DAS.AdminService.Common.Extensions.TagHelpers;
+@using SFA.DAS.AdminService.Web.Controllers
+@using SFA.DAS.AdminService.Web.Domain
 @inject IHttpContextAccessor HttpContextAccessor;
 @model SFA.DAS.AdminService.Web.ViewModels.DashboardViewModel;
 @{
@@ -175,7 +176,7 @@
                     <a class="govuk-link govuk-link--no-visited-state" asp-controller="Search">Search standards and frameworks</a>
                 </li>
                 <li>
-                    <a class="govuk-link govuk-link--no-visited-state" asp-controller="Search" asp-action="DigitalAccessReferenceSearch">Search using digital access reference number</a>
+                    <a class="govuk-link govuk-link--no-visited-state" asp-route="@DigitalAccessController.DigitalAccessReferenceSearchRouteGet">Search using digital access reference number</a>
                 </li>
             </ul>
         </div>

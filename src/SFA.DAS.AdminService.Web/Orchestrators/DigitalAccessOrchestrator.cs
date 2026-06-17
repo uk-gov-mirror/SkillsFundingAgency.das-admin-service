@@ -9,11 +9,11 @@ using System;
 
 namespace SFA.DAS.AdminService.Web.Orchestrators
 {
-    public class SearchOrchestrator : ISearchOrchestrator
+    public class DigitalAccessOrchestrator : IDigitalAccessOrchestrator
     {
         private readonly IMediator _mediator;
 
-        public SearchOrchestrator(IMediator mediator)
+        public DigitalAccessOrchestrator(IMediator mediator)
         {
             _mediator = mediator;
         }
