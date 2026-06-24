@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 using SFA.DAS.AdminService.Application.Commands.CheckUserActionByCode;
+using SFA.DAS.AdminService.Common.Models;
 using SFA.DAS.AdminService.Infrastructure.Api.Responses;
 
 namespace SFA.DAS.AdminService.Application.UnitTests.Commands.CheckUserActionByCode
@@ -37,9 +38,9 @@ namespace SFA.DAS.AdminService.Application.UnitTests.Commands.CheckUserActionByC
             result.Should().NotBeNull();
             result.Id.Should().Be(response.Id);
             result.UserId.Should().Be(response.UserId);
-            result.ActionType.Should().Be(SFA.DAS.AdminService.Common.Models.ActionType.Reprint);
-            result.ActionStatus.Should().Be(SFA.DAS.AdminService.Common.Models.UserActionStatus.New);
-            result.CertificateType.Should().Be(SFA.DAS.AdminService.Common.Models.CertificateType.Standard);
+            result.ActionType.Should().Be(ActionType.Reprint);
+            result.ActionStatus.Should().Be(UserActionStatus.New);
+            result.CertificateType.Should().Be(CertificateType.Standard);
             result.FamilyName.Should().Be("Doe");
             result.GivenNames.Should().Be("Jane");
             result.AdminActions.Should().NotBeNull();

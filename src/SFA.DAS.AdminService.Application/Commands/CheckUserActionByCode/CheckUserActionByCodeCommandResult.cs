@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SFA.DAS.AdminService.Infrastructure.Api.Responses;
+using SFA.DAS.AdminService.Application.Models;
 using SFA.DAS.AdminService.Common.Models;
 
 namespace SFA.DAS.AdminService.Application.Commands.CheckUserActionByCode
@@ -18,7 +20,7 @@ namespace SFA.DAS.AdminService.Application.Commands.CheckUserActionByCode
         public Guid? CertificateId { get; set; }
         public CertificateType? CertificateType { get; set; }
         public string CourseName { get; set; }
-        public List<AdminActionResponse> AdminActions { get; set; }
+        public List<AdminAction> AdminActions { get; set; }
 
         public static implicit operator CheckUserActionByCodeCommandResult(CheckUserActionByCodeResponse source)
         {
@@ -55,7 +57,12 @@ namespace SFA.DAS.AdminService.Application.Commands.CheckUserActionByCode
                 CertificateId = source.CertificateId,
                 CertificateType = parsedCertificateType,
                 CourseName = source.CourseName,
-                AdminActions = source.AdminActions
+                AdminActions = source.AdminActions == null ? null : source.AdminActions.Select(a => new AdminAction
+                {
+                    Username = a.Username,
+                    ActionTime = a.ActionTime,
+                    Action = a.Action
+                }).ToList()
             };
         }
     }

@@ -1,6 +1,6 @@
 ﻿using SFA.DAS.AdminService.Common.Models;
 
-namespace SFA.DAS.AdminService.Web.ViewModels.Search
+namespace SFA.DAS.AdminService.Web.ViewModels.DigitalAccess
 {
     public class DigitalAccessReferenceSearchViewModel
     {

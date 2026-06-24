@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using SFA.DAS.AdminService.Web.Orchestrators;
 using SFA.DAS.AdminService.Web.Infrastructure;
 using SFA.DAS.AdminService.Common.Extensions;
-using SFA.DAS.AdminService.Web.ViewModels.Search;
+using SFA.DAS.AdminService.Web.ViewModels.DigitalAccess;
 using SFA.DAS.AdminService.Common.Models;
 using System.Threading.Tasks;
 
@@ -58,6 +58,7 @@ namespace SFA.DAS.AdminService.Web.Controllers
                 case ActionType.Reprint:
                 case ActionType.Help:
                 case ActionType.Contact:
+                    return View(resultVm);
                 case ActionType.NotFound:
                     return RedirectToRoute(UserNotFoundRouteGet, new { referenceNumber = resultVm.ReferenceNumber });
                 case ActionType.NotMatched:
@@ -72,7 +73,12 @@ namespace SFA.DAS.AdminService.Web.Controllers
         {
             var username = _contextAccessor.HttpContext.User.UserId();
             var vm = await _orchestrator.GetUserNotFoundViewModel(referenceNumber, username);
-            return View(vm ?? new UserNotFoundViewModel { ReferenceNumber = referenceNumber });
+            if (vm == null)
+            {
+                return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);
+            }
+
+            return View(vm);
         }
 
         [HttpGet("digital-access/reference/{referenceNumber}/not-matched", Name = UserNotMatchedRouteGet)]

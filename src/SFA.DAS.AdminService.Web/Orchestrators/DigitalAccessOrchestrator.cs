@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using MediatR;
 using SFA.DAS.AdminService.Web.ViewModels.Search;
 using SFA.DAS.AdminService.Web.Extensions;
+using SFA.DAS.AdminService.Web.ViewModels.DigitalAccess;
 using SFA.DAS.AdminService.Application.Commands.CheckUserActionByCode;
 using SFA.DAS.AdminService.Application.Commands.GetUserAllActivityByCode;
 using SFA.DAS.AdminService.Common.Models;
@@ -41,7 +42,7 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
             var result = await _mediator.Send(new CheckUserActionByCodeCommand { Code = reference, Username = username });
 
             if (result == null)
-                return new UserNotFoundViewModel { ReferenceNumber = reference };
+                return null;
 
             return new UserNotFoundViewModel
             {

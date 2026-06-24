@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.AdminService.Web.ViewModels.Search;
+using SFA.DAS.AdminService.Web.ViewModels.DigitalAccess;
 using SFA.DAS.AdminService.Web.Controllers;
 using SFA.DAS.AdminService.Common.Models;
 using System.Threading.Tasks;
@@ -111,6 +111,24 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.Home
             model.ReferenceNumber.Should().Be(reference);
             model.FirstName.Should().Be("Amy");
             model.LastName.Should().Be("Adams");
+        }
+
+        [Test]
+        public async Task UserNotFound_Get_OrchestratorReturnsNull_RedirectsToSearch()
+        {
+            // Arrange
+            var reference = "REF999";
+
+            _digitalAccessOrchestratorMock.Setup(x => x.GetUserNotFoundViewModel(reference, It.IsAny<string>()))
+                .ReturnsAsync((UserNotFoundViewModel)null);
+
+            // Act
+            var controller = new DigitalAccessController(_httpContextAccessorMock.Object, _digitalAccessOrchestratorMock.Object);
+            var result = await controller.UserNotFound(reference);
+
+            // Assert
+            var redirect = result.Should().BeOfType<RedirectToRouteResult>().Subject;
+            redirect.RouteName.Should().Be(DigitalAccessController.DigitalAccessReferenceSearchRouteGet);
         }
     }
 }
