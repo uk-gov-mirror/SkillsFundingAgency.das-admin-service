@@ -7,7 +7,7 @@ using MediatR;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.AdminService.Application.Commands.CheckUserActionByCode;
-using SFA.DAS.AdminService.Infrastructure.Api.Responses;
+using SFA.DAS.AdminService.Application.Models;
 using SFA.DAS.AdminService.Web.Orchestrators;
 using SFA.DAS.AdminService.Common.Models;
 
@@ -35,6 +35,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             var vm = await _sut.GetDigitalAccessReferenceViewModel("ref1", "user1");
 
             vm.Should().BeNull();
+            _mediatorMock.Verify(m => m.Send(It.IsAny<CheckUserActionByCodeCommand>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
@@ -53,9 +54,9 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
                 CertificateId = Guid.NewGuid(),
                 CertificateType = CertificateType.Standard,
                 CourseName = "Course",
-                AdminActions = new List<AdminActionResponse>
+                AdminActions = new List<AdminAction>
                 {
-                    new AdminActionResponse { Username = "admin", ActionTime = DateTime.UtcNow, Action = "Viewed" }
+                    new AdminAction { Username = "admin", ActionTime = DateTime.UtcNow, Action = "Viewed" }
                 }
             };
 
@@ -67,20 +68,19 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             vm.Should().NotBeNull();
             vm.ReferenceNumber.Should().Be("ref2");
             vm.ActionType.Should().Be(response.ActionType);
+            _mediatorMock.Verify(m => m.Send(It.IsAny<CheckUserActionByCodeCommand>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
-        public async Task GetUserNotFoundViewModel_ReturnsReferenceOnly_WhenMediatorReturnsNull()
+        public async Task GetUserNotFoundViewModel_ReturnsNull_WhenMediatorReturnsNull()
         {
             _mediatorMock.Setup(m => m.Send(It.IsAny<CheckUserActionByCodeCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((CheckUserActionByCodeCommandResult)null);
 
             var vm = await _sut.GetUserNotFoundViewModel("ref3", "user3");
 
-            vm.Should().NotBeNull();
-            vm.ReferenceNumber.Should().Be("ref3");
-            vm.FirstName.Should().BeNullOrEmpty();
-            vm.LastName.Should().BeNullOrEmpty();
+            vm.Should().BeNull();
+            _mediatorMock.Verify(m => m.Send(It.IsAny<CheckUserActionByCodeCommand>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
@@ -101,6 +101,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             vm.ReferenceNumber.Should().Be("ref4");
             vm.FirstName.Should().Be("Diane");
             vm.LastName.Should().Be("Lockhart");
+            _mediatorMock.Verify(m => m.Send(It.IsAny<CheckUserActionByCodeCommand>(), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

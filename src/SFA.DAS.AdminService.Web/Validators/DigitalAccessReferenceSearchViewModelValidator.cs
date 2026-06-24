@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using SFA.DAS.AdminService.Web.ViewModels.Search;
+using SFA.DAS.AdminService.Web.ViewModels.DigitalAccess;
 using System.Text.RegularExpressions;
 
 namespace SFA.DAS.AdminService.Web.Validators

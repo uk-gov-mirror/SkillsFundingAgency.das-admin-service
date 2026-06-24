@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using SFA.DAS.AdminService.Web.ViewModels.Search;
+using SFA.DAS.AdminService.Web.ViewModels.DigitalAccess;
 
 namespace SFA.DAS.AdminService.Web.Orchestrators
 {

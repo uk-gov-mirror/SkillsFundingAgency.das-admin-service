@@ -1,4 +1,4 @@
-﻿namespace SFA.DAS.AdminService.Web.ViewModels.Search
+﻿namespace SFA.DAS.AdminService.Web.ViewModels.DigitalAccess
 {
     public class UserNotFoundViewModel
     {
