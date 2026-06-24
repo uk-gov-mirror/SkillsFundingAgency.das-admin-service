@@ -6,26 +6,26 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.AdminService.Application.Commands.GetUserAllActivityByCode;
+using SFA.DAS.AdminService.Application.Queries.GetUserAllActivityByCode;
 using SFA.DAS.AdminService.Infrastructure.Api.Responses;
 using SFA.DAS.AdminService.Common.Models;
 using SFA.DAS.AdminService.Infrastructure.ApiClients.Admin;
 
-namespace SFA.DAS.AdminService.Application.UnitTests.Commands.GetUserAllActivityByCode
+namespace SFA.DAS.AdminService.Application.UnitTests.Queries.GetUserAllActivityByCode
 {
     [TestFixture]
-    public class GetUserAllActivityByCodeCommandHandlerTests
+    public class GetUserAllActivityByCodeQueryHandlerTests
     {
         private Mock<IAdminOuterApi> _adminApiMock;
-        private Mock<ILogger<GetUserAllActivityByCodeCommandHandler>> _loggerMock;
-        private GetUserAllActivityByCodeCommandHandler _handler;
+        private Mock<ILogger<GetUserAllActivityByCodeQueryHandler>> _loggerMock;
+        private GetUserAllActivityByCodeQueryHandler _handler;
 
         [SetUp]
         public void SetUp()
         {
             _adminApiMock = new Mock<IAdminOuterApi>();
-            _loggerMock = new Mock<ILogger<GetUserAllActivityByCodeCommandHandler>>();
-            _handler = new GetUserAllActivityByCodeCommandHandler(_adminApiMock.Object, _loggerMock.Object);
+            _loggerMock = new Mock<ILogger<GetUserAllActivityByCodeQueryHandler>>();
+            _handler = new GetUserAllActivityByCodeQueryHandler(_adminApiMock.Object, _loggerMock.Object);
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace SFA.DAS.AdminService.Application.UnitTests.Commands.GetUserAllActivity
 
             _adminApiMock.Setup(x => x.GetUserAllActivity("code123")).ReturnsAsync(response);
 
-            var result = await _handler.Handle(new GetUserAllActivityByCodeCommand { Code = "code123" }, CancellationToken.None);
+            var result = await _handler.Handle(new GetUserAllActivityByCodeQuery { Code = "code123" }, CancellationToken.None);
 
             result.Should().NotBeNull();
             result.UserId.Should().Be(response.UserId);
@@ -66,9 +66,9 @@ namespace SFA.DAS.AdminService.Application.UnitTests.Commands.GetUserAllActivity
         {
             _adminApiMock.Setup(x => x.GetUserAllActivity(It.IsAny<string>())).ReturnsAsync(new UserAllActivityResponse { GovUKIdentifier = "", EmailAddress = "", PhoneNumber = "" });
 
-            var command = new GetUserAllActivityByCodeCommand { Code = "abc123" };
+            var query = new GetUserAllActivityByCodeQuery { Code = "abc123" };
 
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler.Handle(query, CancellationToken.None);
 
             _adminApiMock.Verify(x => x.GetUserAllActivity("abc123"), Times.Once);
         }
@@ -78,7 +78,7 @@ namespace SFA.DAS.AdminService.Application.UnitTests.Commands.GetUserAllActivity
         {
             _adminApiMock.Setup(x => x.GetUserAllActivity(It.IsAny<string>())).ThrowsAsync(new Exception("API failure"));
 
-            Func<Task> act = async () => await _handler.Handle(new GetUserAllActivityByCodeCommand { Code = "c" }, CancellationToken.None);
+            Func<Task> act = async () => await _handler.Handle(new GetUserAllActivityByCodeQuery { Code = "c" }, CancellationToken.None);
 
             act.Should().ThrowAsync<Exception>().WithMessage("API failure");
         }

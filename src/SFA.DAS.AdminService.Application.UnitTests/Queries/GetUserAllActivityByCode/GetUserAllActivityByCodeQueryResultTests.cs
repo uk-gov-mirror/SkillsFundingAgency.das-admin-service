@@ -1,13 +1,13 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using SFA.DAS.AdminService.Application.Commands.GetUserAllActivityByCode;
+using SFA.DAS.AdminService.Application.Queries.GetUserAllActivityByCode;
 using SFA.DAS.AdminService.Infrastructure.Api.Responses;
 
-namespace SFA.DAS.AdminService.Application.UnitTests.Commands.GetUserAllActivityByCode
+namespace SFA.DAS.AdminService.Application.UnitTests.Queries.GetUserAllActivityByCode
 {
     [TestFixture]
-    public class GetUserAllActivityByCodeCommandResultTests
+    public class GetUserAllActivityByCodeQueryResultTests
     {
         [Test]
         public void ImplicitConversion_MapsFields_FromApiResponse()
@@ -25,7 +25,7 @@ namespace SFA.DAS.AdminService.Application.UnitTests.Commands.GetUserAllActivity
                 UserActions = new System.Collections.Generic.List<UserActionResponse>()
             };
 
-            GetUserAllActivityByCodeCommandResult result = api;
+            GetUserAllActivityByCodeQueryResult result = api;
 
             result.Should().NotBeNull();
             result.UserId.Should().Be(api.UserId);

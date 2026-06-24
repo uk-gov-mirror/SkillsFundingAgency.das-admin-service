@@ -5,25 +5,25 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.AdminService.Infrastructure.ApiClients.Admin;
 
-namespace SFA.DAS.AdminService.Application.Commands.GetUserAllActivityByCode
+namespace SFA.DAS.AdminService.Application.Queries.GetUserAllActivityByCode
 {
-    public class GetUserAllActivityByCodeCommandHandler : IRequestHandler<GetUserAllActivityByCodeCommand, GetUserAllActivityByCodeCommandResult>
+    public class GetUserAllActivityByCodeQueryHandler : IRequestHandler<GetUserAllActivityByCodeQuery, GetUserAllActivityByCodeQueryResult>
     {
         private readonly IAdminOuterApi _adminOuterApi;
-        private readonly ILogger<GetUserAllActivityByCodeCommandHandler> _logger;
+        private readonly ILogger<GetUserAllActivityByCodeQueryHandler> _logger;
 
-        public GetUserAllActivityByCodeCommandHandler(IAdminOuterApi adminOuterApi, ILogger<GetUserAllActivityByCodeCommandHandler> logger)
+        public GetUserAllActivityByCodeQueryHandler(IAdminOuterApi adminOuterApi, ILogger<GetUserAllActivityByCodeQueryHandler> logger)
         {
             _adminOuterApi = adminOuterApi;
             _logger = logger;
         }
 
-        public async Task<GetUserAllActivityByCodeCommandResult> Handle(GetUserAllActivityByCodeCommand request, CancellationToken cancellationToken)
+        public async Task<GetUserAllActivityByCodeQueryResult> Handle(GetUserAllActivityByCodeQuery request, CancellationToken cancellationToken)
         {
             try
             {
                 var response = await _adminOuterApi.GetUserAllActivity(request.Code);
-                return (GetUserAllActivityByCodeCommandResult)response;
+                return (GetUserAllActivityByCodeQueryResult)response;
             }
             catch (Exception ex)
             {

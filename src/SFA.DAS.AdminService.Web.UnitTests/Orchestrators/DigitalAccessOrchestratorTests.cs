@@ -7,8 +7,7 @@ using MediatR;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.AdminService.Application.Commands.CheckUserActionByCode;
-using SFA.DAS.AdminService.Application.Commands.GetUserAllActivityByCode;
-using SFA.DAS.AdminService.Infrastructure.Api.Responses;
+using SFA.DAS.AdminService.Application.Queries.GetUserAllActivityByCode;
 using SFA.DAS.AdminService.Application.Models;
 using SFA.DAS.AdminService.Web.Orchestrators;
 using SFA.DAS.AdminService.Common.Models;
@@ -109,50 +108,50 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
         [Test]
         public async Task GetUserNotMatchedViewModel_ReturnsNull_WhenMediatorReturnsNull()
         {
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserAllActivityByCodeCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((GetUserAllActivityByCodeCommandResult)null);
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((GetUserAllActivityByCodeQueryResult)null);
 
             var vm = await _sut.GetUserNotMatchedViewModel("ref-nm");
 
             vm.Should().BeNull();
-            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserAllActivityByCodeCommand>(), It.IsAny<CancellationToken>()), Times.Once);
+            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
         public async Task GetUserNotMatchedViewModel_ReturnsMappedViewModel_WhenMediatorReturnsResult()
         {
-            var response = new GetUserAllActivityByCodeCommandResult
+            var response = new GetUserAllActivityByCodeQueryResult
             {
                 IsLocked = true,
                 GovUKIdentifier = "GOV123",
                 EmailAddress = "alice@example.com",
                 PhoneNumber = "0123456789",
-                UserActions = new List<UserActionResponse>
+                UserActions = new List<UserAction>
                 {
-                    new UserActionResponse
+                    new UserAction
                     {
                         Id = 1,
                         ActionCode = "REF1",
-                        ActionType = "NotMatched",
+                        ActionType = ActionType.NotMatched,
                         ActionTime = DateTime.UtcNow,
-                        ActionStatus = "Failed",
+                        ActionStatus = UserActionStatus.Viewed,
                         GivenNames = "Alice",
                         FamilyName = "Jones",
-                        CertificateType = CertificateType.Standard.ToString(),
-                        UserMatches = new List<UserMatchResponse>
+                        CertificateType = CertificateType.Standard,
+                        UserMatches = new List<UserMatch>
                         {
-                            new UserMatchResponse { EventTime = DateTime.UtcNow.AddMinutes(-5), Uln = 111, CourseName = "Course A", DateAwarded = 2020, ProviderName = "Provider A", FamilyName = "Jones", CertificateType = CertificateType.Standard.ToString() },
-                            new UserMatchResponse { EventTime = DateTime.UtcNow, Uln = 222, CourseName = "Course B", DateAwarded = 2021, ProviderName = "Provider B", FamilyName = "Jones", CertificateType = CertificateType.Standard.ToString() }
+                            new UserMatch { EventTime = DateTime.UtcNow.AddMinutes(-5), Uln = 111, CourseName = "Course A", DateAwarded = 2020, ProviderName = "Provider A", FamilyName = "Jones", CertificateType = CertificateType.Standard },
+                            new UserMatch { EventTime = DateTime.UtcNow, Uln = 222, CourseName = "Course B", DateAwarded = 2021, ProviderName = "Provider B", FamilyName = "Jones", CertificateType = CertificateType.Standard }
                         },
-                        AdminActions = new List<AdminActionResponse>
+                        AdminActions = new List<AdminAction>
                         {
-                            new AdminActionResponse { Username = "admin", Action = "Unlocked", ActionTime = DateTime.UtcNow.AddMinutes(1) }
+                            new AdminAction { Username = "admin", Action = "Unlocked", ActionTime = DateTime.UtcNow.AddMinutes(1) }
                         }
                     }
                 }
             };
 
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserAllActivityByCodeCommand>(), It.IsAny<CancellationToken>()))
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(response);
 
             var vm = await _sut.GetUserNotMatchedViewModel("ref-nm");
@@ -166,7 +165,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             var item = vm.History[0];
             item.TagText.Should().Be(Web.Constants.DigitalAccessConstants.TagTextUnlocked );
             item.Attempts.Should().HaveCount(2);
-            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserAllActivityByCodeCommand>(), It.IsAny<CancellationToken>()), Times.Once);
+            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

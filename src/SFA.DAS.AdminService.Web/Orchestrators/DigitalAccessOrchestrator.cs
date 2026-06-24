@@ -2,11 +2,10 @@
 using System.Linq;
 using System.Collections.Generic;
 using MediatR;
-using SFA.DAS.AdminService.Web.ViewModels.Search;
 using SFA.DAS.AdminService.Web.Extensions;
 using SFA.DAS.AdminService.Web.ViewModels.DigitalAccess;
 using SFA.DAS.AdminService.Application.Commands.CheckUserActionByCode;
-using SFA.DAS.AdminService.Application.Commands.GetUserAllActivityByCode;
+using SFA.DAS.AdminService.Application.Queries.GetUserAllActivityByCode;
 using SFA.DAS.AdminService.Common.Models;
 using System;
 
@@ -54,7 +53,7 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
 
         public async Task<UserNotMatchedViewModel> GetUserNotMatchedViewModel(string reference)
         {
-            GetUserAllActivityByCodeCommandResult response = await _mediator.Send(new GetUserAllActivityByCodeCommand { Code = reference });
+            GetUserAllActivityByCodeQueryResult response = await _mediator.Send(new GetUserAllActivityByCodeQuery { Code = reference });
 
             if (response == null)
                 return null;
@@ -65,16 +64,10 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
             {
                 foreach (var ua in response.UserActions.OrderByDescending(u => u.ActionTime))
                 {
-                    var parsedActionType = ActionType.NotMatched;
-                    if (!string.IsNullOrEmpty(ua.ActionType) && Enum.TryParse<ActionType>(ua.ActionType, true, out var at))
-                    {
-                        parsedActionType = at;
-                    }
-
                     var item = new UserAccessHistoryItem
                     {
                         FormattedActionTime = ua.ActionTime.ToUkDateTimeString(),
-                        ActionType = parsedActionType,
+                        ActionType = ua.ActionType,
                         ReferenceNumber = ua.ActionCode
                     };
 
