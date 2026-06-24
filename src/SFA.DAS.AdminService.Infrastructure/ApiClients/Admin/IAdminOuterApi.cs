@@ -9,5 +9,7 @@ namespace SFA.DAS.AdminService.Infrastructure.ApiClients.Admin
     {
         [Post("/users/useractions/{code}/search")]
         Task<CheckUserActionByCodeResponse> CheckUserActionByCode([Path] string code, [Body] CheckUserActionByCodeRequest request);
+        [Get("/users/useractions/{code}/all-activity")]
+        Task<UserAllActivityResponse> GetUserAllActivity([Path] string code);
     }
 }

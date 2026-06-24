@@ -7,6 +7,7 @@ using MediatR;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.AdminService.Application.Commands.CheckUserActionByCode;
+using SFA.DAS.AdminService.Application.Commands.GetUserAllActivityByCode;
 using SFA.DAS.AdminService.Infrastructure.Api.Responses;
 using SFA.DAS.AdminService.Web.Orchestrators;
 using SFA.DAS.AdminService.Common.Models;
@@ -101,6 +102,69 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             vm.ReferenceNumber.Should().Be("ref4");
             vm.FirstName.Should().Be("Diane");
             vm.LastName.Should().Be("Lockhart");
+        }
+
+        [Test]
+        public async Task GetUserNotMatchedViewModel_ReturnsNull_WhenMediatorReturnsNull()
+        {
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserAllActivityByCodeCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((GetUserAllActivityByCodeCommandResult)null);
+
+            var vm = await _sut.GetUserNotMatchedViewModel("ref-nm");
+
+            vm.Should().BeNull();
+            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserAllActivityByCodeCommand>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Test]
+        public async Task GetUserNotMatchedViewModel_ReturnsMappedViewModel_WhenMediatorReturnsResult()
+        {
+            var response = new GetUserAllActivityByCodeCommandResult
+            {
+                IsLocked = true,
+                GovUKIdentifier = "GOV123",
+                EmailAddress = "alice@example.com",
+                PhoneNumber = "0123456789",
+                UserActions = new List<UserActionResponse>
+                {
+                    new UserActionResponse
+                    {
+                        Id = 1,
+                        ActionCode = "REF1",
+                        ActionType = "NotMatched",
+                        ActionTime = DateTime.UtcNow,
+                        ActionStatus = "Failed",
+                        GivenNames = "Alice",
+                        FamilyName = "Jones",
+                        CertificateType = CertificateType.Standard.ToString(),
+                        UserMatches = new List<UserMatchResponse>
+                        {
+                            new UserMatchResponse { EventTime = DateTime.UtcNow.AddMinutes(-5), Uln = 111, CourseName = "Course A", DateAwarded = 2020, ProviderName = "Provider A", FamilyName = "Jones", CertificateType = CertificateType.Standard.ToString() },
+                            new UserMatchResponse { EventTime = DateTime.UtcNow, Uln = 222, CourseName = "Course B", DateAwarded = 2021, ProviderName = "Provider B", FamilyName = "Jones", CertificateType = CertificateType.Standard.ToString() }
+                        },
+                        AdminActions = new List<AdminActionResponse>
+                        {
+                            new AdminActionResponse { Username = "admin", Action = "Unlocked", ActionTime = DateTime.UtcNow.AddMinutes(1) }
+                        }
+                    }
+                }
+            };
+
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserAllActivityByCodeCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(response);
+
+            var vm = await _sut.GetUserNotMatchedViewModel("ref-nm");
+
+            vm.Should().NotBeNull();
+            vm.ReferenceNumber.Should().Be("ref-nm");
+            vm.FirstName.Should().Be("Alice");
+            vm.LastName.Should().Be("Jones");
+            vm.IsUserLocked.Should().BeTrue();
+            vm.History.Should().HaveCount(1);
+            var item = vm.History[0];
+            item.TagText.Should().Be(Web.Constants.DigitalAccessConstants.TagTextUnlocked );
+            item.Attempts.Should().HaveCount(2);
+            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserAllActivityByCodeCommand>(), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

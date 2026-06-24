@@ -1,0 +1,141 @@
+﻿@using SFA.DAS.AdminService.Web.Controllers
+@using SFA.DAS.AdminService.Web.ViewModels.Search
+@model UserNotMatchedViewModel
+@{
+    ViewBag.Title = "User not matched";
+    Layout = "_Layout";
+}
+
+<a asp-route="@DigitalAccessController.DigitalAccessReferenceSearchRouteGet" class="govuk-back-link">Back</a>
+
+<main class="govuk-main-wrapper " id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds digital-access">
+
+            <h1 class="govuk-heading-xl">
+                <span class="govuk-caption-xl">Digital access reference number: @Model.ReferenceNumber</span>
+                User access details
+            </h1>
+
+            @if (Model.IsUserLocked)
+            {
+                <div class="govuk-inset-text app-inset-highlight">
+                    <p class="govuk-body-l govuk-!-margin-bottom-3 app-inset-highlight__heading">This user has an authorisation issue</p>
+                    <p class="govuk-body">This user did not provide the correct details during the authorisation process.</p>
+                    <p class="govuk-body">Their access to the service has been locked, refer to Tier 2 to restore access.</p>
+                </div>
+            }
+
+            <h2 class="govuk-heading-m govuk-!-margin-top-6">Apprentice details</h2>
+
+            <p class="govuk-body"><a asp-action="Index" asp-controller="Search">Search standards and frameworks</a></p>
+
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">First name</dt>
+                    <dd class="govuk-summary-list__value">@Model.FirstName</dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Last name</dt>
+                    <dd class="govuk-summary-list__value">@Model.LastName</dd>
+                </div>
+            </dl>
+
+            <h2 class="govuk-heading-m">Digital access history</h2>
+            <p class="govuk-body">The most recent action is shown first.</p>
+
+            @if (Model.History != null && Model.History.Count > 0)
+            {
+                var idCnt = Model.History.Count;
+                foreach (var item in Model.History)
+                {  
+
+                    <div class="govuk-!-margin-bottom-4">
+                                            <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-6 govuk-!-margin-bottom-6" />
+                        <div class="govuk-grid-row govuk-!-align-items-center">
+                            <div class="govuk-grid-column-two-thirds">
+                                <h3 class="govuk-heading-s">@idCnt. Authorisation failed and user locked</h3>
+                            </div>
+                            <div class="govuk-grid-column-one-third">
+                                <div class="govuk-!-text-align-right">
+                                    <span class="@item.TagClass">@item.TagText</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="govuk-body">Date and time: @item.FormattedActionTime<br />
+                            Reference number: @item.ReferenceNumber
+                        </p>
+
+                        @if (item.IsUnlocked)
+                        {
+                            <h4 class="govuk-heading-s">Unlocked by @item.UnlockedBy</h4>
+                            <p class="govuk-body">Date and time: @(item.FormattedUnlockedTime ?? string.Empty)</p>
+                        }
+
+                        <details class="govuk-details" data-module="govuk-details">
+                            <summary class="govuk-details__summary">
+                                <span class="govuk-details__summary-text">Show attempt details</span>
+                            </summary>
+                            <div class="govuk-details__text">
+                                <p class="govuk-body">The answers given by the user when they tried to access the Apprenticeship certificates service.</p>
+
+                                <table class="govuk-table">
+                                    <thead class="govuk-table__head">
+                                        <tr class="govuk-table__row">
+                                            <th scope="col" class="govuk-table__header">Detail</th>
+                                            <th scope="col" class="govuk-table__header">Attempt 1</th>
+                                            <th scope="col" class="govuk-table__header">Attempt 2</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="govuk-table__body">
+                                        <tr class="govuk-table__row">
+                                            <th scope="row" class="govuk-table__header">Date and time</th>
+                                            <td class="govuk-table__cell">@(item.Attempts.Count > 0 ? item.Attempts[0].FormattedEventTime : string.Empty)</td>
+                                            <td class="govuk-table__cell">@(item.Attempts.Count > 1 ? item.Attempts[1].FormattedEventTime : string.Empty)</td>
+                                        </tr>
+                                        <tr class="govuk-table__row">
+                                            <th scope="row" class="govuk-table__header">Unique learner number</th>
+                                            <td class="govuk-table__cell">@(item.Attempts.Count > 0 ? item.Attempts[0].Uln : string.Empty)</td>
+                                            <td class="govuk-table__cell">@(item.Attempts.Count > 1 ? item.Attempts[1].Uln : string.Empty)</td>
+                                        </tr>
+                                        <tr class="govuk-table__row">
+                                            <th scope="row" class="govuk-table__header">Course</th>
+                                            <td class="govuk-table__cell">@(item.Attempts.Count > 0 ? item.Attempts[0].CourseName : string.Empty)</td>
+                                            <td class="govuk-table__cell">@(item.Attempts.Count > 1 ? item.Attempts[1].CourseName : string.Empty)</td>
+                                        </tr>
+                                        <tr class="govuk-table__row">
+                                            <th scope="row" class="govuk-table__header">Year of completion</th>
+                                            <td class="govuk-table__cell">@(item.Attempts.Count > 0 ? item.Attempts[0].DateAwarded : string.Empty)</td>
+                                            <td class="govuk-table__cell">@(item.Attempts.Count > 1 ? item.Attempts[1].DateAwarded : string.Empty)</td>
+                                        </tr>
+                                        <tr class="govuk-table__row">
+                                            <th scope="row" class="govuk-table__header">Training provider</th>
+                                            <td class="govuk-table__cell">@(item.Attempts.Count > 0 ? item.Attempts[0].ProviderName : string.Empty)</td>
+                                            <td class="govuk-table__cell">@(item.Attempts.Count > 1 ? item.Attempts[1].ProviderName : string.Empty)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </details>
+                    </div>
+                    idCnt--;
+                }
+            }
+
+            @if (Model.IsUserLocked)
+            {
+                <h2 class="govuk-heading-m">Restore access</h2>
+                <p><a class="govuk-button govuk-!-margin-bottom-3" asp-route="@DigitalAccessController.UserNotMatchedRouteGet" asp-route-referenceNumber="@Model.ReferenceNumber">Restore access to service</a></p>
+                <p class="govuk-body"><a asp-route="@DigitalAccessController.DigitalAccessReferenceSearchRouteGet">Search for another reference number</a><br />
+                <a asp-action="Index" asp-controller="Home">Return to dashboard</a></p>
+            }
+            else
+            {
+                <h2 class="govuk-heading-m">What do you want to do next?</h2>
+                <p class="govuk-body"><a asp-route="@DigitalAccessController.DigitalAccessReferenceSearchRouteGet">Search for another reference number</a><br />
+                <a asp-action="Index" asp-controller="Home">Return to dashboard</a></p>
+            }
+
+        </div>
+    </div>
+</main>
