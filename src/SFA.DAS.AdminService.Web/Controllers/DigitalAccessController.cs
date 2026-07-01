@@ -7,6 +7,7 @@ using SFA.DAS.AdminService.Common.Extensions;
 using SFA.DAS.AdminService.Web.ViewModels.DigitalAccess;
 using SFA.DAS.AdminService.Common.Models;
 using System.Threading.Tasks;
+using SFA.DAS.AdminService.Web.Extensions;
 
 namespace SFA.DAS.AdminService.Web.Controllers
 {
@@ -20,6 +21,8 @@ namespace SFA.DAS.AdminService.Web.Controllers
         public const string UserNotMatchedRouteGet = nameof(UserNotMatchedRouteGet);
         public const string DigitalAccessReferenceSearchRouteGet = nameof(DigitalAccessReferenceSearchRouteGet);
         public const string DigitalAccessReferenceSearchRoutePost = nameof(DigitalAccessReferenceSearchRoutePost);
+        public const string RestoreAccessRouteGet = nameof(RestoreAccessRouteGet);
+        public const string RestoreAccessRoutePost = nameof(RestoreAccessRoutePost);
 
         public DigitalAccessController(IHttpContextAccessor contextAccessor, IDigitalAccessOrchestrator orchestrator)
         {
@@ -92,7 +95,48 @@ namespace SFA.DAS.AdminService.Web.Controllers
 
             return View(vm);
         }
-
         
+        [HttpGet("digital-access/reference/{referenceNumber}/restore", Name = RestoreAccessRouteGet)]
+        public async Task<IActionResult> RestoreAccess(string referenceNumber)
+        {
+            if (string.IsNullOrWhiteSpace(referenceNumber))
+            {
+                return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);
+            }
+
+            var vm = await _orchestrator.GetRestoreAccessViewModel(referenceNumber);
+            if (vm == null)
+            {
+                return RedirectToRoute(UserNotMatchedRouteGet, new { referenceNumber });
+            }
+
+            return View(vm);
+        }
+
+        [HttpPost("digital-access/reference/{referenceNumber}/restore", Name = RestoreAccessRoutePost)]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RestoreAccessPost(string referenceNumber)
+        {
+            var username = _contextAccessor.HttpContext.User.UserId();
+            if (string.IsNullOrWhiteSpace(referenceNumber))
+            {
+                return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);
+            }
+
+            var restoreVm = await _orchestrator.GetRestoreAccessViewModel(referenceNumber);
+            if (restoreVm == null)
+            {
+                return RedirectToRoute(UserNotMatchedRouteGet, new { referenceNumber });
+            }
+
+            await _orchestrator.UnlockUser(restoreVm.UserId, username, restoreVm.UserActionId);
+
+            if (TempData != null)
+            {
+                TempData.AddFlashMessage("User access restored", "Tell the user to log in to Apprenticeship certificates.", TempDataDictionaryExtensions.FlashMessageLevel.Success);
+            }
+
+            return RedirectToRoute(UserNotMatchedRouteGet, new { referenceNumber });
+        }
     }
 }

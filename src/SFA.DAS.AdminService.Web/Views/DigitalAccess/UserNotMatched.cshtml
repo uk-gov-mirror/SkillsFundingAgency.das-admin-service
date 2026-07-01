@@ -12,6 +12,8 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds digital-access">
 
+            <partial name="_FlashMessagePartial" />
+
             <h1 class="govuk-heading-xl">
                 <span class="govuk-caption-xl">Digital access reference number: @Model.ReferenceNumber</span>
                 User access details
@@ -125,7 +127,7 @@
             @if (Model.IsUserLocked)
             {
                 <h2 class="govuk-heading-m">Restore access</h2>
-                <p><a class="govuk-button govuk-!-margin-bottom-3" asp-route="@DigitalAccessController.UserNotMatchedRouteGet" asp-route-referenceNumber="@Model.ReferenceNumber">Restore access to service</a></p>
+                <p><a class="govuk-button govuk-!-margin-bottom-3" asp-route="@DigitalAccessController.RestoreAccessRouteGet" asp-route-referenceNumber="@Model.ReferenceNumber">Restore access to service</a></p>
                 <p class="govuk-body"><a asp-route="@DigitalAccessController.DigitalAccessReferenceSearchRouteGet">Search for another reference number</a><br />
                 <a asp-action="Index" asp-controller="Home">Return to dashboard</a></p>
             }
