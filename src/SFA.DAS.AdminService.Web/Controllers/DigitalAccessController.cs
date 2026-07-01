@@ -42,7 +42,7 @@ namespace SFA.DAS.AdminService.Web.Controllers
                 return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);
             }
 
-            var username = _contextAccessor.HttpContext.User.UserId();
+            var username = _contextAccessor.HttpContext.User.UserDisplayName();
 
             var resultVm = await _orchestrator.GetDigitalAccessReferenceViewModel(vm.ReferenceNumber, username);
 
@@ -69,7 +69,7 @@ namespace SFA.DAS.AdminService.Web.Controllers
         [HttpGet("digital-access/reference/{referenceNumber}/not-found", Name = UserNotFoundRouteGet)]
         public async Task<IActionResult> UserNotFound(string referenceNumber)
         {
-            var username = _contextAccessor.HttpContext.User.UserId();
+            var username = _contextAccessor.HttpContext.User.UserDisplayName();
             var vm = await _orchestrator.GetUserNotFoundViewModel(referenceNumber, username);
             if (vm == null)
             {
