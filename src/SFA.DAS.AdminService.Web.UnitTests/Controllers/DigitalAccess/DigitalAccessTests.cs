@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -7,12 +8,28 @@ using System.Threading.Tasks;
 using SFA.DAS.AdminService.Web.ViewModels.DigitalAccess;
 using SFA.DAS.AdminService.Web.Controllers;
 using SFA.DAS.AdminService.Common.Models;
+using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.Home
 {
     [TestFixture]
     public class DigitalAccessTests : SearchControllerTestsBase
     {
+        [SetUp]
+        public void SetupDigitalAccessUser()
+        {
+            var context = new DefaultHttpContext();
+            context.User = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn", "test@user"),
+                new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname", "Test"),
+                new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname", "User")
+            }));
+
+            _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(context);
+        }
+
         [Test]
         public void DigitalAccessReferenceSearch_Get_ReturnsViewWithNewViewModel()
         {

@@ -23,6 +23,7 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
 
         public async Task<DigitalAccessReferenceSearchViewModel> GetDigitalAccessReferenceViewModel(string reference, string username)
         {
+            // TODO: This endpoint will be updated as part of the next ticket.
             var result = await _mediator.Send(new CheckUserActionByCodeCommand { Code = reference, Username = username });
 
             if (result == null)
@@ -39,16 +40,18 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
 
         public async Task<UserNotFoundViewModel> GetUserNotFoundViewModel(string reference, string username)
         {
-            var result = await _mediator.Send(new CheckUserActionByCodeCommand { Code = reference, Username = username });
+            var result = await _mediator.Send(new GetUserAllActivityByCodeQuery { Code = reference });
 
             if (result == null)
                 return null;
 
+            var matchedUserAction = result.UserActions?.FirstOrDefault(x => string.Equals(x.ActionCode, reference, StringComparison.OrdinalIgnoreCase));
+
             return new UserNotFoundViewModel
             {
                 ReferenceNumber = reference,
-                FirstName = result.GivenNames,
-                LastName = result.FamilyName
+                FirstName = matchedUserAction?.GivenNames,
+                LastName = matchedUserAction?.FamilyName
             };
         }
 
