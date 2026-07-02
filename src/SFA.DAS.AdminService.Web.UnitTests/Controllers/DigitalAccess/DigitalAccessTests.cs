@@ -13,6 +13,7 @@ using System.Security.Claims;
 
 namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.Home
 {
+    // TODO: As part of the cleanup, rename this class. If this file grows larger, split the test cases into multiple test classes.
     [TestFixture]
     public class DigitalAccessTests : SearchControllerTestsBase
     {
