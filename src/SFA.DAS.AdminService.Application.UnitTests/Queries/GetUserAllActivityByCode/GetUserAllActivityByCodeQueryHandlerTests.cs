@@ -43,7 +43,7 @@ namespace SFA.DAS.AdminService.Application.UnitTests.Queries.GetUserAllActivityB
                 LockedTime = DateTime.UtcNow,
                 UserActions = new List<UserActionResponse>
                 {
-                    new UserActionResponse { Id = 1, ActionCode = "REF1", ActionType = "NotMatched", ActionTime = DateTime.UtcNow, ActionStatus = "Failed", GivenNames = "Jane", FamilyName = "Doe", CertificateType = CertificateType.Standard.ToString() }
+                    new UserActionResponse { Id = 1, ActionCode = "REF1", ActionType = "NotMatched", ActionTime = DateTime.UtcNow, ActionStatus = UserActionStatus.New.ToString(), GivenNames = "Jane", FamilyName = "Doe", CertificateType = CertificateType.Standard.ToString() }
                 }
             };
 
@@ -57,7 +57,18 @@ namespace SFA.DAS.AdminService.Application.UnitTests.Queries.GetUserAllActivityB
             result.EmailAddress.Should().Be(response.EmailAddress);
             result.PhoneNumber.Should().Be(response.PhoneNumber);
             result.IsLocked.Should().BeTrue();
-            result.UserActions.Should().BeEquivalentTo(response.UserActions);
+            result.UserActions.Should().NotBeNull();
+            result.UserActions.Count.Should().Be(response.UserActions.Count);
+            var expectedAction = response.UserActions[0];
+            var actualAction = result.UserActions[0];
+            actualAction.Id.Should().Be(expectedAction.Id);
+            actualAction.ActionCode.Should().Be(expectedAction.ActionCode);
+            actualAction.ActionType.Should().Be(ActionType.NotMatched);
+            actualAction.ActionTime.Should().BeCloseTo(expectedAction.ActionTime, TimeSpan.FromSeconds(1));
+            actualAction.ActionStatus.Should().Be(UserActionStatus.New);
+            actualAction.GivenNames.Should().Be(expectedAction.GivenNames);
+            actualAction.FamilyName.Should().Be(expectedAction.FamilyName);
+            actualAction.CertificateType.Should().Be(CertificateType.Standard);
             _adminApiMock.Verify(x => x.GetUserAllActivity("code123"), Times.AtLeastOnce);
         }
 

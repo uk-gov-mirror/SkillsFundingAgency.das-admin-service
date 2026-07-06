@@ -82,7 +82,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             var vm = await _sut.GetUserNotFoundViewModel("ref3", "user3");
 
             vm.Should().BeNull();
-            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]

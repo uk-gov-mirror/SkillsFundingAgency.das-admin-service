@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.AdminService.Application.Queries.GetUserActionByCode;
+using SFA.DAS.AdminService.Common.Models;
 using SFA.DAS.AdminService.Infrastructure.Api.Responses;
 using SFA.DAS.AdminService.Infrastructure.ApiClients.Admin;
 
@@ -70,7 +71,11 @@ namespace SFA.DAS.AdminService.Application.UnitTests.Queries.GetUserActionByCode
         public async Task Handle_Calls_OuterApi_With_Correct_Code()
         {
             // Arrange
-            _adminApiMock.Setup(x => x.GetUserActionByCode(It.IsAny<string>())).ReturnsAsync(new GetUserActionByCodeResponse());
+            _adminApiMock.Setup(x => x.GetUserActionByCode(It.IsAny<string>())).ReturnsAsync(new GetUserActionByCodeResponse
+            {
+                ActionType = ActionType.NotFound.ToString(),
+                ActionStatus = UserActionStatus.New.ToString()
+            });
 
             var query = new GetUserActionByCodeQuery { Code = "abc123" };
 
