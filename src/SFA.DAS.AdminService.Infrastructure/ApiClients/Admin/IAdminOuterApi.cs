@@ -14,5 +14,7 @@ namespace SFA.DAS.AdminService.Infrastructure.ApiClients.Admin
         Task<UserAllActivityResponse> GetUserAllActivity([Path] string code);
         [Post("/users/{userId}/unlock")]
         Task UnlockUser([Path] Guid userId, [Body] UnlockUserRequest request);
+        [Get("/users/useractions/{code}")]
+        Task<GetUserActionByCodeResponse> GetUserActionByCode([Path] string code);
     }
 }
