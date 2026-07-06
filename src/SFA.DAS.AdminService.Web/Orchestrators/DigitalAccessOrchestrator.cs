@@ -6,6 +6,7 @@ using SFA.DAS.AdminService.Web.Extensions;
 using SFA.DAS.AdminService.Web.ViewModels.DigitalAccess;
 using SFA.DAS.AdminService.Application.Commands.CheckUserActionByCode;
 using SFA.DAS.AdminService.Application.Queries.GetUserAllActivityByCode;
+using SFA.DAS.AdminService.Application.Queries.GetUserActionByCode;
 using SFA.DAS.AdminService.Common.Models;
 using System;
 
@@ -38,18 +39,16 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
 
         public async Task<UserNotFoundViewModel> GetUserNotFoundViewModel(string reference, string username)
         {
-            var result = await _mediator.Send(new GetUserAllActivityByCodeQuery { Code = reference });
+            var result = await _mediator.Send(new GetUserActionByCodeQuery { Code = reference });
 
             if (result == null)
                 return null;
 
-            var matchedUserAction = result.UserActions?.FirstOrDefault(x => string.Equals(x.ActionCode, reference, StringComparison.OrdinalIgnoreCase));
-
             return new UserNotFoundViewModel
             {
                 ReferenceNumber = reference,
-                FirstName = matchedUserAction?.GivenNames,
-                LastName = matchedUserAction?.FamilyName
+                FirstName = result.GivenNames,
+                LastName = result.FamilyName
             };
         }
 

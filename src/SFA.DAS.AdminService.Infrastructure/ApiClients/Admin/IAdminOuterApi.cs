@@ -11,5 +11,7 @@ namespace SFA.DAS.AdminService.Infrastructure.ApiClients.Admin
         Task<CheckUserActionByCodeResponse> CheckUserActionByCode([Path] string code, [Body] CheckUserActionByCodeRequest request);
         [Get("/users/useractions/{code}/all-activity")]
         Task<UserAllActivityResponse> GetUserAllActivity([Path] string code);
+        [Get("/users/useractions/{code}")]
+        Task<GetUserActionByCodeResponse> GetUserActionByCode([Path] string code);
     }
 }

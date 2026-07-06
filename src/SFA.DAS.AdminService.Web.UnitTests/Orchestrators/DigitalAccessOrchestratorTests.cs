@@ -8,6 +8,7 @@ using Moq;
 using NUnit.Framework;
 using SFA.DAS.AdminService.Application.Commands.CheckUserActionByCode;
 using SFA.DAS.AdminService.Application.Queries.GetUserAllActivityByCode;
+using SFA.DAS.AdminService.Application.Queries.GetUserActionByCode;
 using SFA.DAS.AdminService.Application.Models;
 using SFA.DAS.AdminService.Web.Orchestrators;
 using SFA.DAS.AdminService.Common.Models;
@@ -75,8 +76,8 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
         [Test]
         public async Task GetUserNotFoundViewModel_ReturnsNull_WhenMediatorReturnsNull()
         {
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((GetUserAllActivityByCodeQueryResult)null);
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((GetUserActionByCodeQueryResult)null);
 
             var vm = await _sut.GetUserNotFoundViewModel("ref3", "user3");
 
@@ -115,8 +116,8 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
                 }
             };
 
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(response);
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new GetUserActionByCodeQueryResult { GivenNames = "Diane", FamilyName = "Lockhart" });
 
             var vm = await _sut.GetUserNotFoundViewModel("ref4", "user4");
 
@@ -124,7 +125,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             vm.ReferenceNumber.Should().Be("ref4");
             vm.FirstName.Should().Be("Diane");
             vm.LastName.Should().Be("Lockhart");
-            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
