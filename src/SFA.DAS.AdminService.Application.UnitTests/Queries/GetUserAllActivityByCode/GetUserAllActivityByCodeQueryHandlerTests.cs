@@ -64,7 +64,7 @@ namespace SFA.DAS.AdminService.Application.UnitTests.Queries.GetUserAllActivityB
             actualAction.Id.Should().Be(expectedAction.Id);
             actualAction.ActionCode.Should().Be(expectedAction.ActionCode);
             actualAction.ActionType.Should().Be(ActionType.NotMatched);
-            actualAction.ActionTime.Should().BeCloseTo(expectedAction.ActionTime, TimeSpan.FromSeconds(1));
+            actualAction.ActionTime.Should().Be(expectedAction.ActionTime);
             actualAction.ActionStatus.Should().Be(UserActionStatus.New);
             actualAction.GivenNames.Should().Be(expectedAction.GivenNames);
             actualAction.FamilyName.Should().Be(expectedAction.FamilyName);
