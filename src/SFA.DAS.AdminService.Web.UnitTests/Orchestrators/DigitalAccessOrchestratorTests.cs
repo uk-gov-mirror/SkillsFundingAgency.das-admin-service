@@ -263,32 +263,35 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
         [Test]
         public async Task GetCertificateChangeRequestViewModel_ReturnsNull_WhenMediatorReturnsNull()
         {
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((GetUserAllActivityByCodeQueryResult)null);
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((GetUserActionByCodeQueryResult)null);
 
             var vm = await _sut.GetCertificateChangeRequestViewModel("REFX", "userx");
 
             vm.Should().BeNull();
-            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
         public async Task GetCertificateChangeRequestViewModel_ReturnsMappedViewModel_WhenMediatorReturnsResult()
         {
             var certId = Guid.NewGuid();
-            var response = new GetUserAllActivityByCodeQueryResult
+
+            var response = new GetUserActionByCodeQueryResult
             {
+                Id = 1,
                 UserId = Guid.NewGuid(),
-                GovUKIdentifier = "GOVC",
-                EmailAddress = "b.brown@example.com",
-                PhoneNumber = "0123456789",
-                UserActions = new List<UserAction>
-                {
-                    new UserAction { Id = 1, ActionCode = "REFC", ActionType = ActionType.Contact, ActionTime = DateTime.UtcNow.AddMinutes(-5), CourseName = "Course X", CertificateId = certId, CertificateType = CertificateType.Framework, GivenNames = "Bob", FamilyName = "Brown", Uln = 555 }
-                }
+                ActionType = ActionType.Contact,
+                ActionTime = DateTime.UtcNow,
+                CourseName = "Course X",
+                CertificateId = certId,
+                CertificateType = CertificateType.Framework,
+                GivenNames = "Bob",
+                FamilyName = "Brown",
+                Uln = 555
             };
 
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()))
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(response);
 
             var vm = await _sut.GetCertificateChangeRequestViewModel("REFC", "usery");
@@ -301,7 +304,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             vm.FirstName.Should().Be("Bob");
             vm.LastName.Should().Be("Brown");
             vm.Uln.Should().Be(555);
-            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

@@ -157,14 +157,7 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
 
         public async Task<CertificateChangeRequestViewModel> GetCertificateChangeRequestViewModel(string reference, string username)
         {
-            var response = await _mediator.Send(new GetUserAllActivityByCodeQuery { Code = reference });
-
-            if (response == null || response.UserActions == null || response.UserActions.Count == 0) return null;
-
-            var ua = response.UserActions
-                .Where(u => u.ActionType == ActionType.Contact && u.ActionCode == reference)
-                .OrderByDescending(u => u.ActionTime)
-                .FirstOrDefault();
+            var ua = await _mediator.Send(new GetUserActionByCodeQuery { Code = reference });
 
             if (ua == null) return null;
 
@@ -173,7 +166,7 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
                 ReferenceNumber = reference,
                 CourseName = ua.CourseName ?? string.Empty,
                 CertificateId = ua.CertificateId,
-                CertificateType = ua.CertificateType,
+                CertificateType = ua.CertificateType ?? default,
                 ViewCertificateAction = "Check",
                 FirstName = ua.GivenNames,
                 LastName = ua.FamilyName,
