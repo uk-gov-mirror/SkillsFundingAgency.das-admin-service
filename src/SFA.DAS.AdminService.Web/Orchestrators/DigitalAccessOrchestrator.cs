@@ -22,7 +22,6 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
 
         public async Task<DigitalAccessReferenceSearchViewModel> GetDigitalAccessReferenceViewModel(string reference, string username)
         {
-            // TODO: This endpoint will be updated as part of the next ticket.
             var result = await _mediator.Send(new CheckUserActionByCodeCommand { Code = reference, Username = username });
 
             if (result == null)
