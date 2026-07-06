@@ -1,0 +1,69 @@
+﻿@using SFA.DAS.AdminService.Web.Controllers
+@using SFA.DAS.AdminService.Web.ViewModels.DigitalAccess
+@model CertificateChangeRequestViewModel
+@{
+    ViewBag.Title = "Request to change certificate details";
+    Layout = "_Layout";
+}
+
+<a asp-route="@DigitalAccessController.DigitalAccessReferenceSearchRouteGet" class="govuk-back-link">Back</a>
+
+<main class="govuk-main-wrapper " id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds digital-access">
+            <h1 class="govuk-heading-xl">
+                <span class="govuk-caption-xl">Digital access reference number: @Model.ReferenceNumber</span>
+                Request to change certificate details
+            </h1>
+            <h2 class="govuk-heading-m">Request details</h2>
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Reference number</dt>
+                    <dd class="govuk-summary-list__value">@Model.ReferenceNumber</dd>
+                    <dd class="govuk-summary-list__actions"></dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Request type</dt>
+                    <dd class="govuk-summary-list__value">@Model.RequestType</dd>
+                    <dd class="govuk-summary-list__actions"></dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Course</dt>
+                    <dd class="govuk-summary-list__value">@Model.CourseName</dd>
+                    <dd class="govuk-summary-list__actions">
+                        @if (Model.CertificateId != null)
+                        {
+                            <a class="govuk-link"
+                               asp-controller="CertificateAmend"
+                               asp-action="@Model.ViewCertificateAction"
+                               asp-route-certificateId="@Model.CertificateId">
+                                @Model.ViewCertificateText
+                            </a>
+                        }
+                    </dd>
+                </div>
+            </dl>
+            <h2 class="govuk-heading-m">Apprentice details</h2>
+
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">First name</dt>
+                    <dd class="govuk-summary-list__value">@Model.FirstName</dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Last name</dt>
+                    <dd class="govuk-summary-list__value">@Model.LastName</dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Unique learner number</dt>
+                    <dd class="govuk-summary-list__value">@Model.Uln</dd>
+                </div>
+            </dl>
+
+            <p class="govuk-body"><a asp-route="@DigitalAccessController.DigitalAccessReferenceSearchRouteGet">Search standards and frameworks</a></p>
+
+        </div>
+    </div>
+</main>

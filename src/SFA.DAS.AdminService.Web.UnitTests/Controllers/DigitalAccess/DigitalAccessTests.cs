@@ -88,6 +88,76 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.Home
         }
 
         [Test]
+        public async Task DigitalAccessReferenceSearch_Post_OrchestratorReturnsContact_RedirectsToCertificateChangeRequest()
+        {
+            // Arrange
+            var vm = new DigitalAccessReferenceSearchViewModel { ReferenceNumber = "ABC123" };
+            var resultVm = new DigitalAccessReferenceSearchViewModel
+            {
+                ReferenceNumber = vm.ReferenceNumber,
+                ActionType = ActionType.Contact
+            };
+
+            _digitalAccessOrchestratorMock.Setup(x => x.GetDigitalAccessReferenceViewModel(vm.ReferenceNumber, It.IsAny<string>()))
+                .ReturnsAsync(resultVm);
+
+            // Act
+            var controller = new DigitalAccessController(_httpContextAccessorMock.Object, _digitalAccessOrchestratorMock.Object);
+            var result = await controller.DigitalAccessReferenceSearch(vm);
+
+            // Assert
+            var redirect = result.Should().BeOfType<RedirectToRouteResult>().Subject;
+            redirect.RouteName.Should().Be(DigitalAccessController.CertificateChangeRequestRouteGet);
+            redirect.RouteValues.Should().ContainKey("referenceNumber");
+            redirect.RouteValues["referenceNumber"].Should().Be(vm.ReferenceNumber);
+        }
+
+        [Test]
+        public async Task CertificateChangeRequest_Get_OrchestratorReturnsViewModel_ReturnsViewWithModel()
+        {
+            // Arrange
+            var reference = "REF123";
+            var vm = new CertificateChangeRequestViewModel
+            {
+                ReferenceNumber = reference,
+                FirstName = "Amy",
+                LastName = "Adams"
+            };
+
+            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificateChangeRequestViewModel(reference, It.IsAny<string>()))
+                .ReturnsAsync(vm);
+
+            // Act
+            var controller = new DigitalAccessController(_httpContextAccessorMock.Object, _digitalAccessOrchestratorMock.Object);
+            var result = await controller.CertificateChangeRequest(reference);
+
+            // Assert
+            var view = result.Should().BeOfType<ViewResult>().Subject;
+            var model = view.Model.Should().BeOfType<CertificateChangeRequestViewModel>().Subject;
+            model.ReferenceNumber.Should().Be(reference);
+            model.FirstName.Should().Be("Amy");
+            model.LastName.Should().Be("Adams");
+        }
+
+        [Test]
+        public async Task CertificateChangeRequest_Get_OrchestratorReturnsNull_RedirectsToSearch()
+        {
+            // Arrange
+            var reference = "REF999";
+
+            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificateChangeRequestViewModel(reference, It.IsAny<string>()))
+                .ReturnsAsync((CertificateChangeRequestViewModel)null);
+
+            // Act
+            var controller = new DigitalAccessController(_httpContextAccessorMock.Object, _digitalAccessOrchestratorMock.Object);
+            var result = await controller.CertificateChangeRequest(reference);
+
+            // Assert
+            var redirect = result.Should().BeOfType<RedirectToRouteResult>().Subject;
+            redirect.RouteName.Should().Be(DigitalAccessController.DigitalAccessReferenceSearchRouteGet);
+        }
+
+        [Test]
         public async Task UserNotFound_Get_OrchestratorReturnsViewModel_ReturnsViewWithModel()
         {
             // Arrange

@@ -9,6 +9,7 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
         Task<DigitalAccessReferenceSearchViewModel> GetDigitalAccessReferenceViewModel(string reference, string username);
         Task<UserNotFoundViewModel> GetUserNotFoundViewModel(string reference, string username);
         Task<UserNotMatchedViewModel> GetUserNotMatchedViewModel(string reference);
+        Task<CertificateChangeRequestViewModel> GetCertificateChangeRequestViewModel(string reference, string username);
         Task<RestoreAccessViewModel> GetRestoreAccessViewModel(string reference);
         Task UnlockUser(Guid userId, string username, long userActionId);
     }

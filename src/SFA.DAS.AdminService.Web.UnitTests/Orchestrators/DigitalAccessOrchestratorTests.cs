@@ -236,5 +236,49 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
 
             _mediatorMock.Verify(m => m.Send(It.IsAny<UnlockUserCommand>(), It.IsAny<CancellationToken>()), Times.Once);
         }
+
+        [Test]
+        public async Task GetCertificateChangeRequestViewModel_ReturnsNull_WhenMediatorReturnsNull()
+        {
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((GetUserAllActivityByCodeQueryResult)null);
+
+            var vm = await _sut.GetCertificateChangeRequestViewModel("REFX", "userx");
+
+            vm.Should().BeNull();
+            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Test]
+        public async Task GetCertificateChangeRequestViewModel_ReturnsMappedViewModel_WhenMediatorReturnsResult()
+        {
+            var certId = Guid.NewGuid();
+            var response = new GetUserAllActivityByCodeQueryResult
+            {
+                UserId = Guid.NewGuid(),
+                GovUKIdentifier = "GOVC",
+                EmailAddress = "b.brown@example.com",
+                PhoneNumber = "0123456789",
+                UserActions = new List<UserAction>
+                {
+                    new UserAction { Id = 1, ActionCode = "REFC", ActionType = ActionType.Contact, ActionTime = DateTime.UtcNow.AddMinutes(-5), CourseName = "Course X", CertificateId = certId, CertificateType = CertificateType.Framework, GivenNames = "Bob", FamilyName = "Brown", Uln = 555 }
+                }
+            };
+
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(response);
+
+            var vm = await _sut.GetCertificateChangeRequestViewModel("REFC", "usery");
+
+            vm.Should().NotBeNull();
+            vm.ReferenceNumber.Should().Be("REFC");
+            vm.CourseName.Should().Be("Course X");
+            vm.CertificateId.Should().Be(certId);
+            vm.ViewCertificateAction.Should().Be("Check");
+            vm.FirstName.Should().Be("Bob");
+            vm.LastName.Should().Be("Brown");
+            vm.Uln.Should().Be(555);
+            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
     }
 }

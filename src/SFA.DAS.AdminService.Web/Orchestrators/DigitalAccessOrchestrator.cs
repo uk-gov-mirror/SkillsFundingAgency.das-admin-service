@@ -153,5 +153,31 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
                 UserActionId = userActionId
             });
         }
+
+        public async Task<CertificateChangeRequestViewModel> GetCertificateChangeRequestViewModel(string reference, string username)
+        {
+            var response = await _mediator.Send(new GetUserAllActivityByCodeQuery { Code = reference });
+
+            if (response == null || response.UserActions == null || response.UserActions.Count == 0) return null;
+
+            var ua = response.UserActions
+                .Where(u => u.ActionType == ActionType.Contact && u.ActionCode == reference)
+                .OrderByDescending(u => u.ActionTime)
+                .FirstOrDefault();
+
+            if (ua == null) return null;
+
+            return new CertificateChangeRequestViewModel
+            {
+                ReferenceNumber = reference,
+                CourseName = ua.CourseName ?? string.Empty,
+                CertificateId = ua.CertificateId,
+                CertificateType = ua.CertificateType,
+                ViewCertificateAction = "Check",
+                FirstName = ua.GivenNames,
+                LastName = ua.FamilyName,
+                Uln = ua.Uln
+            };
+        }
     }
 }

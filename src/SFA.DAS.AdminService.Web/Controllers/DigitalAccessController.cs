@@ -22,6 +22,7 @@ namespace SFA.DAS.AdminService.Web.Controllers
         public const string DigitalAccessReferenceSearchRouteGet = nameof(DigitalAccessReferenceSearchRouteGet);
         public const string DigitalAccessReferenceSearchRoutePost = nameof(DigitalAccessReferenceSearchRoutePost);
         public const string RestoreAccessRouteGet = nameof(RestoreAccessRouteGet);
+        public const string CertificateChangeRequestRouteGet = nameof(CertificateChangeRequestRouteGet);
         public const string RestoreAccessRoutePost = nameof(RestoreAccessRoutePost);
 
         public DigitalAccessController(IHttpContextAccessor contextAccessor, IDigitalAccessOrchestrator orchestrator)
@@ -60,8 +61,9 @@ namespace SFA.DAS.AdminService.Web.Controllers
             {
                 case ActionType.Reprint:
                 case ActionType.Help:
-                case ActionType.Contact:
                     return View(resultVm);
+                case ActionType.Contact:
+                    return RedirectToRoute(CertificateChangeRequestRouteGet, new { referenceNumber = resultVm.ReferenceNumber });
                 case ActionType.NotFound:
                     return RedirectToRoute(UserNotFoundRouteGet, new { referenceNumber = resultVm.ReferenceNumber });
                 case ActionType.NotMatched:
@@ -108,6 +110,19 @@ namespace SFA.DAS.AdminService.Web.Controllers
             if (vm == null)
             {
                 return RedirectToRoute(UserNotMatchedRouteGet, new { referenceNumber });
+            }
+
+            return View(vm);
+        }
+
+        [HttpGet("digital-access/reference/{referenceNumber}/certificate-change-request", Name = CertificateChangeRequestRouteGet)]
+        public async Task<IActionResult> CertificateChangeRequest(string referenceNumber)
+        {
+            var username = _contextAccessor.HttpContext.User.UserId();
+            var vm = await _orchestrator.GetCertificateChangeRequestViewModel(referenceNumber, username);
+            if (vm == null)
+            {
+                return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);
             }
 
             return View(vm);
