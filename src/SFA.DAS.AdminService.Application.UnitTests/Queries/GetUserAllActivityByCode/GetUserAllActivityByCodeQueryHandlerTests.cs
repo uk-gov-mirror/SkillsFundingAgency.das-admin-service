@@ -43,6 +43,7 @@ namespace SFA.DAS.AdminService.Application.UnitTests.Queries.GetUserAllActivityB
                 LockedTime = DateTime.UtcNow,
                 UserActions = new List<UserActionResponse>
                 {
+
                     new UserActionResponse { Id = 1, ActionCode = "REF1", ActionType = "NotMatched", ActionTime = DateTime.UtcNow, ActionStatus = UserActionStatus.New.ToString(), GivenNames = "Jane", FamilyName = "Doe", CertificateType = CertificateType.Standard.ToString() }
                 }
             };
@@ -57,6 +58,7 @@ namespace SFA.DAS.AdminService.Application.UnitTests.Queries.GetUserAllActivityB
             result.EmailAddress.Should().Be(response.EmailAddress);
             result.PhoneNumber.Should().Be(response.PhoneNumber);
             result.IsLocked.Should().BeTrue();
+
             result.UserActions.Should().NotBeNull();
             result.UserActions.Count.Should().Be(response.UserActions.Count);
             var expectedAction = response.UserActions[0];

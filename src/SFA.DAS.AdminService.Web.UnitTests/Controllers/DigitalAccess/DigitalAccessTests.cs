@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Threading.Tasks;
 using SFA.DAS.AdminService.Web.ViewModels.DigitalAccess;
 using SFA.DAS.AdminService.Web.Controllers;
 using SFA.DAS.AdminService.Common.Models;
@@ -208,6 +210,64 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.Home
             model.IsUserLocked.Should().BeTrue();
             model.History.Should().HaveCount(1);
             _digitalAccessOrchestratorMock.Verify(x => x.GetUserNotMatchedViewModel(reference), Moq.Times.Once);
+        }
+
+        [Test]
+        public async Task RestoreAccess_Get_OrchestratorReturnsViewModel_ReturnsViewWithModel()
+        {
+            // Arrange
+            var reference = "REF123";
+            var vm = new RestoreAccessViewModel
+            {
+                ReferenceNumber = reference,
+                UserId = Guid.NewGuid(),
+                UserActionId = 42
+            };
+
+            _digitalAccessOrchestratorMock.Setup(x => x.GetRestoreAccessViewModel(reference))
+                .ReturnsAsync(vm);
+
+            // Act
+            var controller = new DigitalAccessController(_httpContextAccessorMock.Object, _digitalAccessOrchestratorMock.Object);
+            var result = await controller.RestoreAccess(reference);
+
+            // Assert
+            var view = result.Should().BeOfType<ViewResult>().Subject;
+            var model = view.Model.Should().BeOfType<RestoreAccessViewModel>().Subject;
+            model.ReferenceNumber.Should().Be(reference);
+            model.UserActionId.Should().Be(42);
+        }
+
+        [Test]
+        public async Task RestoreAccessPost_PostWithReference_CallsUnlockAndRedirects()
+        {
+            // Arrange
+            var reference = "REF123";
+            var userId = Guid.NewGuid();
+            var userActionId = 42L;
+
+            var restoreVm = new RestoreAccessViewModel
+            {
+                ReferenceNumber = reference,
+                UserId = userId,
+                UserActionId = userActionId
+            };
+
+            _digitalAccessOrchestratorMock.Setup(x => x.GetRestoreAccessViewModel(reference)).ReturnsAsync(restoreVm);
+            _digitalAccessOrchestratorMock.Setup(x => x.UnlockUser(userId, It.IsAny<string>(), userActionId)).Returns(Task.CompletedTask).Verifiable();
+
+            var controller = new DigitalAccessController(_httpContextAccessorMock.Object, _digitalAccessOrchestratorMock.Object);
+
+            // Act
+            var result = await controller.RestoreAccessPost(reference);
+
+            // Assert
+            _digitalAccessOrchestratorMock.Verify(x => x.UnlockUser(userId, It.IsAny<string>(), userActionId), Times.Once);
+
+            var redirect = result.Should().BeOfType<RedirectToRouteResult>().Subject;
+            redirect.RouteName.Should().Be(DigitalAccessController.UserNotMatchedRouteGet);
+            redirect.RouteValues.Should().ContainKey("referenceNumber");
+            redirect.RouteValues["referenceNumber"].Should().Be(reference);
         }
     }
 }

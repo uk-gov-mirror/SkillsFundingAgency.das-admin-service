@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using SFA.DAS.AdminService.Infrastructure.Api.Responses;
 using SFA.DAS.AdminService.Infrastructure.Api.Requests;
+using System;
 
 namespace SFA.DAS.AdminService.Infrastructure.ApiClients.Admin
 {
@@ -11,6 +12,8 @@ namespace SFA.DAS.AdminService.Infrastructure.ApiClients.Admin
         Task<CheckUserActionByCodeResponse> CheckUserActionByCode([Path] string code, [Body] CheckUserActionByCodeRequest request);
         [Get("/users/useractions/{code}/all-activity")]
         Task<UserAllActivityResponse> GetUserAllActivity([Path] string code);
+        [Post("/users/{userId}/unlock")]
+        Task UnlockUser([Path] Guid userId, [Body] UnlockUserRequest request);
         [Get("/users/useractions/{code}")]
         Task<GetUserActionByCodeResponse> GetUserActionByCode([Path] string code);
     }

@@ -9,6 +9,7 @@ using SFA.DAS.AdminService.Application.Queries.GetUserAllActivityByCode;
 using SFA.DAS.AdminService.Application.Queries.GetUserActionByCode;
 using SFA.DAS.AdminService.Common.Models;
 using System;
+using SFA.DAS.AdminService.Application.Commands.UnlockUser;
 
 namespace SFA.DAS.AdminService.Web.Orchestrators
 {
@@ -120,6 +121,38 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
             };
 
             return vm;
+        }
+
+        public async Task<RestoreAccessViewModel> GetRestoreAccessViewModel(string reference)
+        {
+            var response = await _mediator.Send(new GetUserAllActivityByCodeQuery { Code = reference });
+
+            if (response == null) return null;
+
+            if (response.UserActions == null || response.UserActions.Count == 0) return null;
+
+            var ua = response.UserActions
+                .Where(u => u.ActionType == ActionType.NotMatched)
+                .OrderByDescending(u => u.ActionTime)
+                .FirstOrDefault();
+            if (ua == null) return null;
+
+            return new RestoreAccessViewModel
+            {
+                ReferenceNumber = reference,
+                UserId = response.UserId,
+                UserActionId = ua.Id
+            };
+        }
+
+        public async Task UnlockUser(Guid userId, string username, long userActionId)
+        {
+            await _mediator.Send(new UnlockUserCommand
+            {
+                UserId = userId,
+                Username = username,
+                UserActionId = userActionId
+            });
         }
     }
 }

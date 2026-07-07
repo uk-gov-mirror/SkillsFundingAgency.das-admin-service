@@ -11,6 +11,7 @@ using SFA.DAS.AdminService.Application.Queries.GetUserAllActivityByCode;
 using SFA.DAS.AdminService.Application.Queries.GetUserActionByCode;
 using SFA.DAS.AdminService.Application.Models;
 using SFA.DAS.AdminService.Web.Orchestrators;
+using SFA.DAS.AdminService.Application.Commands.UnlockUser;
 using SFA.DAS.AdminService.Common.Models;
 
 namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
@@ -189,6 +190,74 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             item.TagText.Should().Be(Web.Constants.DigitalAccessConstants.TagTextUnlocked );
             item.Attempts.Should().HaveCount(2);
             _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Test]
+        public async Task GetRestoreAccessViewModel_ReturnsNull_WhenMediatorReturnsNull()
+        {
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((GetUserAllActivityByCodeQueryResult)null);
+
+            var vm = await _sut.GetRestoreAccessViewModel("ref-x");
+
+            vm.Should().BeNull();
+            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Test]
+        public async Task GetRestoreAccessViewModel_ReturnsNull_WhenUserActionNotFound()
+        {
+            var response = new GetUserAllActivityByCodeQueryResult
+            {
+                UserId = Guid.NewGuid(),
+                GovUKIdentifier = "GOV1",
+                EmailAddress = "a@b.com",
+                PhoneNumber = "0123",
+                UserActions = null
+            };
+
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(response);
+
+            var vm = await _sut.GetRestoreAccessViewModel("ref-x");
+
+            vm.Should().BeNull();
+        }
+
+        [Test]
+        public async Task GetRestoreAccessViewModel_ReturnsViewModel_WhenUserActionFound()
+        {
+            var userId = Guid.NewGuid();
+            var response = new GetUserAllActivityByCodeQueryResult
+            {
+                UserId = userId,
+                GovUKIdentifier = "GOV2",
+                EmailAddress = "c@d.com",
+                PhoneNumber = "0987",
+                UserActions = new List<UserAction>
+                {
+                    new UserAction { Id = 5, ActionCode = "REF5", GivenNames = "X", FamilyName = "Y", ActionType = ActionType.NotMatched, ActionTime = DateTime.UtcNow }
+                }
+            };
+
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserAllActivityByCodeQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(response);
+
+            var vm = await _sut.GetRestoreAccessViewModel("ref-x");
+
+            vm.Should().NotBeNull();
+            vm.UserId.Should().Be(userId);
+            vm.UserActionId.Should().Be(5);
+            vm.ReferenceNumber.Should().Be("ref-x");
+        }
+
+        [Test]
+        public async Task UnlockUser_SendsUnlockUserCommandToMediator()
+        {
+            var userId = Guid.NewGuid();
+            await _sut.UnlockUser(userId, "admin", 77);
+
+            _mediatorMock.Verify(m => m.Send(It.IsAny<UnlockUserCommand>(), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
