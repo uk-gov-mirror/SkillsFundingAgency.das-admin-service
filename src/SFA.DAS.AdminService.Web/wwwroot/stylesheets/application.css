@@ -1870,12 +1870,34 @@ TODO: change to 'das-page-navigation' and BEM
     padding-bottom: 30px;
 }
 
-.app-user-not-matched-inset {
-    background-color: #f3f2f1;
-    border-left: 10px solid #1d70b8;
-    padding: 20px;
+.app-inset-highlight {
+  background-color: #f3f2f1;
+  border-left: 4px solid #1d70b8;
+  padding: 20px;
 }
 
-.app-user-not-matched-inset__heading {
-    font-weight: 600;
+.app-inset-highlight__heading {
+  font-weight: 600;
+}
+
+.digital-access .govuk-details__text {
+  border-left: none;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+.digital-access__tag-locked,
+.digital-access .digital-access__tag-locked {
+  background-color: #f3d5d5;
+  color: #b10e1e;
+  border: 1px solid #f2c7c7;
+  font-weight: 600;
+}
+
+.digital-access__tag-unlocked,
+.digital-access .digital-access__tag-unlocked {
+  background-color: #d2cfcf;
+  color: #4c4c4c;
+  border: 1px solid #e0e0e0;
+  font-weight: 600;
 }

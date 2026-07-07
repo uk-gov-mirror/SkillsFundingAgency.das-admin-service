@@ -147,5 +147,67 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.Home
             var redirect = result.Should().BeOfType<RedirectToRouteResult>().Subject;
             redirect.RouteName.Should().Be(DigitalAccessController.DigitalAccessReferenceSearchRouteGet);
         }
+
+        [Test]
+        public async Task UserNotMatched_Get_OrchestratorReturnsNull_RedirectsToSearch()
+        {
+            // Arrange
+            var reference = "REF999";
+
+            _digitalAccessOrchestratorMock.Setup(x => x.GetUserNotMatchedViewModel(reference))
+                .ReturnsAsync((UserNotMatchedViewModel)null);
+
+            // Act
+            var controller = new DigitalAccessController(_httpContextAccessorMock.Object, _digitalAccessOrchestratorMock.Object);
+            var result = await controller.UserNotMatched(reference);
+
+            // Assert
+            var redirect = result.Should().BeOfType<RedirectToRouteResult>().Subject;
+            redirect.RouteName.Should().Be(DigitalAccessController.DigitalAccessReferenceSearchRouteGet);
+            _digitalAccessOrchestratorMock.Verify(x => x.GetUserNotMatchedViewModel(reference), Moq.Times.Once);
+        }
+
+        [Test]
+        public async Task UserNotMatched_Get_OrchestratorReturnsViewModel_ReturnsViewWithModel()
+        {
+            // Arrange
+            var reference = "REF123";
+            var vm = new UserNotMatchedViewModel
+            {
+                ReferenceNumber = reference,
+                FirstName = "Amy",
+                LastName = "Adams",
+                IsUserLocked = true
+            };
+
+            vm.History.Add(new UserAccessHistoryItem
+            {
+                FormattedActionTime = "10:00",
+                ActionType = ActionType.Reprint,
+                ReferenceNumber = reference,
+                IsUnlocked = false,
+                UnlockedBy = string.Empty,
+                FormattedUnlockedTime = string.Empty,
+                TagClass = "tag",
+                TagText = "text"
+            });
+
+            _digitalAccessOrchestratorMock.Setup(x => x.GetUserNotMatchedViewModel(reference))
+                .ReturnsAsync(vm);
+
+            // Act
+            var controller = new DigitalAccessController(_httpContextAccessorMock.Object, _digitalAccessOrchestratorMock.Object);
+            var result = await controller.UserNotMatched(reference);
+
+            // Assert
+            var view = result.Should().BeOfType<ViewResult>().Subject;
+            var model = view.Model.Should().BeOfType<UserNotMatchedViewModel>().Subject;
+            model.ReferenceNumber.Should().Be(reference);
+            model.FirstName.Should().Be("Amy");
+            model.LastName.Should().Be("Adams");
+            model.IsUserLocked.Should().BeTrue();
+            model.History.Should().HaveCount(1);
+            _digitalAccessOrchestratorMock.Verify(x => x.GetUserNotMatchedViewModel(reference), Moq.Times.Once);
+        }
     }
 }

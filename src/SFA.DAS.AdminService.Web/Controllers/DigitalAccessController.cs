@@ -17,6 +17,7 @@ namespace SFA.DAS.AdminService.Web.Controllers
         private readonly IDigitalAccessOrchestrator _orchestrator;
 
         public const string UserNotFoundRouteGet = nameof(UserNotFoundRouteGet);
+        public const string UserNotMatchedRouteGet = nameof(UserNotMatchedRouteGet);
         public const string DigitalAccessReferenceSearchRouteGet = nameof(DigitalAccessReferenceSearchRouteGet);
         public const string DigitalAccessReferenceSearchRoutePost = nameof(DigitalAccessReferenceSearchRoutePost);
 
@@ -57,10 +58,11 @@ namespace SFA.DAS.AdminService.Web.Controllers
                 case ActionType.Reprint:
                 case ActionType.Help:
                 case ActionType.Contact:
-                case ActionType.NotMatched:
                     return View(resultVm);
                 case ActionType.NotFound:
                     return RedirectToRoute(UserNotFoundRouteGet, new { referenceNumber = resultVm.ReferenceNumber });
+                case ActionType.NotMatched:
+                    return RedirectToRoute(UserNotMatchedRouteGet, new { referenceNumber = resultVm.ReferenceNumber });
             }
 
             return View(resultVm);
@@ -78,5 +80,19 @@ namespace SFA.DAS.AdminService.Web.Controllers
 
             return View(vm);
         }
+
+        [HttpGet("digital-access/reference/{referenceNumber}/not-matched", Name = UserNotMatchedRouteGet)]
+        public async Task<IActionResult> UserNotMatched(string referenceNumber)
+        {
+            var vm = await _orchestrator.GetUserNotMatchedViewModel(referenceNumber);
+            if (vm == null)
+            {
+                return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);
+            }
+
+            return View(vm);
+        }
+
+        
     }
 }

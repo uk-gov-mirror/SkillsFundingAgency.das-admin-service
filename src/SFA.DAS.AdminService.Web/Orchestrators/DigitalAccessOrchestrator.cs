@@ -1,7 +1,14 @@
 ﻿using System.Threading.Tasks;
+using System.Linq;
+using System.Collections.Generic;
 using MediatR;
+using SFA.DAS.AdminService.Web.Extensions;
 using SFA.DAS.AdminService.Web.ViewModels.DigitalAccess;
 using SFA.DAS.AdminService.Application.Commands.CheckUserActionByCode;
+using SFA.DAS.AdminService.Application.Queries.GetUserAllActivityByCode;
+using SFA.DAS.AdminService.Application.Queries.GetUserActionByCode;
+using SFA.DAS.AdminService.Common.Models;
+using System;
 
 namespace SFA.DAS.AdminService.Web.Orchestrators
 {
@@ -32,8 +39,7 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
 
         public async Task<UserNotFoundViewModel> GetUserNotFoundViewModel(string reference, string username)
         {
-            // TODO: This endpoint will be updated as part of the next ticket.
-            var result = await _mediator.Send(new CheckUserActionByCodeCommand { Code = reference, Username = username });
+            var result = await _mediator.Send(new GetUserActionByCodeQuery { Code = reference });
 
             if (result == null)
                 return null;
@@ -44,6 +50,76 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
                 FirstName = result.GivenNames,
                 LastName = result.FamilyName
             };
+        }
+
+        public async Task<UserNotMatchedViewModel> GetUserNotMatchedViewModel(string reference)
+        {
+            GetUserAllActivityByCodeQueryResult response = await _mediator.Send(new GetUserAllActivityByCodeQuery { Code = reference });
+
+            if (response == null)
+                return null;
+
+            var history = new List<UserAccessHistoryItem>();
+
+            if (response.UserActions != null && response.UserActions.Count > 0)
+            {
+                foreach (var ua in response.UserActions.OrderByDescending(u => u.ActionTime))
+                {
+                    var item = new UserAccessHistoryItem
+                    {
+                        FormattedActionTime = ua.ActionTime.ToUkDateTimeString(),
+                        ActionType = ua.ActionType,
+                        ReferenceNumber = ua.ActionCode
+                    };
+
+                    if (ua.UserMatches != null && ua.UserMatches.Count > 0)
+                    {
+                        foreach (var um in ua.UserMatches.OrderBy(u => u.EventTime))
+                        {
+                                item.Attempts.Add(new UserAttempt
+                                {
+                                    FormattedEventTime = um.EventTime.ToUkDateTimeString(),
+                                    Uln = um.Uln?.ToString() ?? Constants.DigitalAccessConstants.Unknown,
+                                    CourseName = string.IsNullOrWhiteSpace(um.CourseName) ? Constants.DigitalAccessConstants.Unknown : um.CourseName,
+                                    DateAwarded = um.DateAwarded?.ToString() ?? Constants.DigitalAccessConstants.Unknown,
+                                    ProviderName = string.IsNullOrWhiteSpace(um.ProviderName) ? Constants.DigitalAccessConstants.Unknown : um.ProviderName
+                                });
+                        }
+                    }
+
+                    if (ua.AdminActions != null && ua.AdminActions.Count > 0)
+                    {
+                        var unlocked = ua.AdminActions.Find(a =>
+                        {
+                            if (!Enum.TryParse<AdminActionType>(a.Action, true, out var adminActionType)) return false;
+                            return adminActionType == AdminActionType.Unlocked && a.ActionTime > ua.ActionTime;
+                        });
+
+                        if (unlocked != null)
+                        {
+                            item.IsUnlocked = true;
+                            item.UnlockedBy = unlocked.Username;
+                            item.FormattedUnlockedTime = unlocked.ActionTime.ToUkDateTimeString();
+                        }
+                    }
+
+                    item.TagClass = item.IsUnlocked ? Constants.DigitalAccessConstants.TagClassUnlocked : Constants.DigitalAccessConstants.TagClassLocked;
+                    item.TagText = item.IsUnlocked ? Constants.DigitalAccessConstants.TagTextUnlocked : Constants.DigitalAccessConstants.TagTextLocked;
+
+                    history.Add(item);
+                }
+            }
+
+            var vm = new UserNotMatchedViewModel
+            {
+                ReferenceNumber = reference,
+                FirstName = response.UserActions?.FirstOrDefault()?.GivenNames,
+                LastName = response.UserActions?.FirstOrDefault()?.FamilyName,
+                History = history,
+                IsUserLocked = response.IsLocked
+            };
+
+            return vm;
         }
     }
 }
