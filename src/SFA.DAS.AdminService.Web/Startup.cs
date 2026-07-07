@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.WsFederation;
@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Extensions.Http;
 using Scrutor;
+using SFA.DAS.AdminService.Application.Commands.CheckUserActionByCode;
 using SFA.DAS.AdminService.Application.Interfaces;
 using SFA.DAS.AdminService.Application.Interfaces.Validation;
 using SFA.DAS.AdminService.Common.Extensions;
@@ -23,13 +24,16 @@ using SFA.DAS.AdminService.Infrastructure.ApiClients.Azure;
 using SFA.DAS.AdminService.Infrastructure.ApiClients.QnA;
 using SFA.DAS.AdminService.Infrastructure.ApiClients.Roatp;
 using SFA.DAS.AdminService.Infrastructure.ApiClients.RoatpApplication;
+using SFA.DAS.AdminService.Infrastructure.Configuration;
 using SFA.DAS.AdminService.Settings;
 using SFA.DAS.AdminService.Web.AutoMapperProfiles;
 using SFA.DAS.AdminService.Web.Extensions;
 using SFA.DAS.AdminService.Web.Helpers;
 using SFA.DAS.AdminService.Web.Infrastructure;
 using SFA.DAS.AdminService.Web.ModelBinders;
+using SFA.DAS.AdminService.Web.Orchestrators;
 using SFA.DAS.AdminService.Web.Services;
+using SFA.DAS.AdminService.Web.StartupExtensions;
 using SFA.DAS.AdminService.Web.Validators;
 using SFA.DAS.AssessorService.Api.Common;
 using SFA.DAS.AssessorService.Application.Api.Client;
@@ -137,6 +141,14 @@ namespace SFA.DAS.AdminService.Web
                 opt.IdleTimeout = TimeSpan.FromHours(1);
             });
 
+            var outerApiConfiguration = Configuration.GetSection(nameof(AdminOuterApiConfiguration))
+                .Get<AdminOuterApiConfiguration>();
+
+            if (outerApiConfiguration == null)
+                throw new InvalidOperationException("Missing AdminOuterApiConfiguration");
+
+            services.AddOuterApi(outerApiConfiguration);
+
             services.AddDistributedCache(ApplicationConfiguration.RedisCacheSettings, _env);
 
             services.AddAntiforgery(options => options.Cookie = new CookieBuilder() { Name = ".Assessors.Staff.AntiForgery", HttpOnly = false });
@@ -147,6 +159,9 @@ namespace SFA.DAS.AdminService.Web
                 config.AddProfile<AutoMapperMappings>();
             });
             services.AddOpenTelemetryRegistration(Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]!);
+            // Configure outer API clients
+            services.AddConfigurationOptions(Configuration);
+
             ConfigureDependencyInjection(services);
         }
 
@@ -217,6 +232,9 @@ namespace SFA.DAS.AdminService.Web
             services.AddTransient<CertificateDateViewModelValidator>();
 
             services.AddTransient<ICsvExportService, CsvExportService>();
+
+            services.AddTransient<IDigitalAccessOrchestrator, DigitalAccessOrchestrator>();
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CheckUserActionByCodeCommand).Assembly));
 
             Common.DependencyInjection.ConfigureDependencyInjection(services);
             services.AddTransient<IFeatureToggles>(x =>
