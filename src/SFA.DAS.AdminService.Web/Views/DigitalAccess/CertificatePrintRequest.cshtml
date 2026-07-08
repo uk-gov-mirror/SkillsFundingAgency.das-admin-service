@@ -36,7 +36,7 @@
                     <dd class="govuk-summary-list__actions">
                         @if (Model.CertificateType == CertificateType.Standard && Model.StandardCode.HasValue && Model.Uln.HasValue)
                         {
-                            <a class="govuk-link" asp-controller="Search" asp-action="LearnerDetails" asp-route-stdCode="@Model.StandardCode" asp-route-uln="@Model.Uln">@Model.ViewCertificateText</a>
+                            <a class="govuk-link" asp-controller="Search" asp-action="LearnerDetails" asp-route-stdCode="@Model.StandardCode" asp-route-uln="@Model.Uln" asp-route-searchString="@Model.Uln">@Model.ViewCertificateText</a>
                         }
                         else if (Model.CertificateType == CertificateType.Framework)
                         {
