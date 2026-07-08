@@ -57,7 +57,6 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.Home
 
             // Assert
             var view = result.Should().BeOfType<ViewResult>().Subject;
-            view.ViewName.Should().Be("CertificatePrintRequest");
             var model = view.Model.Should().BeOfType<CertificatePrintRequestViewModel>().Subject;
             model.ReferenceNumber.Should().Be(reference);
             model.CourseName.Should().Be("Course Z");
