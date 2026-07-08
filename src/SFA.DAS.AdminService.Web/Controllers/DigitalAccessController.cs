@@ -23,6 +23,7 @@ namespace SFA.DAS.AdminService.Web.Controllers
         public const string DigitalAccessReferenceSearchRoutePost = nameof(DigitalAccessReferenceSearchRoutePost);
         public const string RestoreAccessRouteGet = nameof(RestoreAccessRouteGet);
         public const string CertificateChangeRequestRouteGet = nameof(CertificateChangeRequestRouteGet);
+        public const string CertificatePrintRequestRouteGet = nameof(CertificatePrintRequestRouteGet);
         public const string RestoreAccessRoutePost = nameof(RestoreAccessRoutePost);
 
         public DigitalAccessController(IHttpContextAccessor contextAccessor, IDigitalAccessOrchestrator orchestrator)
@@ -60,6 +61,7 @@ namespace SFA.DAS.AdminService.Web.Controllers
             switch (resultVm.ActionType)
             {
                 case ActionType.Reprint:
+                    return RedirectToRoute(CertificatePrintRequestRouteGet, new { referenceNumber = resultVm.ReferenceNumber });
                 case ActionType.Help:
                     return View(resultVm);
                 case ActionType.Contact:
@@ -120,6 +122,19 @@ namespace SFA.DAS.AdminService.Web.Controllers
         {
             var username = _contextAccessor.HttpContext.User.UserId();
             var vm = await _orchestrator.GetCertificateChangeRequestViewModel(referenceNumber, username);
+            if (vm == null)
+            {
+                return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);
+            }
+
+            return View(vm);
+        }
+
+        [HttpGet("digital-access/reference/{referenceNumber}/certificate-print-request", Name = CertificatePrintRequestRouteGet)]
+        public async Task<IActionResult> CertificatePrintRequest(string referenceNumber)
+        {
+            var username = _contextAccessor.HttpContext.User.UserId();
+            var vm = await _orchestrator.GetCertificatePrintRequestViewModel(referenceNumber, username);
             if (vm == null)
             {
                 return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);

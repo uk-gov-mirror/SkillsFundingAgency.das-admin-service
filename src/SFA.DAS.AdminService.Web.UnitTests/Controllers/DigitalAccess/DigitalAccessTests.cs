@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using SFA.DAS.AdminService.Web.ViewModels.DigitalAccess;
 using SFA.DAS.AdminService.Web.Controllers;
 using SFA.DAS.AdminService.Common.Models;
-using System.Threading.Tasks;
 using System.Security.Claims;
 
 namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.Home
@@ -29,6 +28,87 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.Home
             }));
 
             _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(context);
+        }
+
+        [Test]
+        public async Task CertificatePrintRequest_Get_OrchestratorReturnsViewModel_ReturnsViewWithModel()
+        {
+            // Arrange
+            var reference = "REF123";
+            var certId = Guid.NewGuid();
+            var vm = new CertificatePrintRequestViewModel
+            {
+                ReferenceNumber = reference,
+                CourseName = "Course Z",
+                CertificateId = certId,
+                CertificateType = CertificateType.Standard,
+                FirstName = "Sam",
+                LastName = "Smith",
+                Uln = 321,
+                StandardCode = 789
+            };
+
+            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificatePrintRequestViewModel(reference, It.IsAny<string>()))
+                .ReturnsAsync(vm);
+
+            // Act
+            var controller = new DigitalAccessController(_httpContextAccessorMock.Object, _digitalAccessOrchestratorMock.Object);
+            var result = await controller.CertificatePrintRequest(reference);
+
+            // Assert
+            var view = result.Should().BeOfType<ViewResult>().Subject;
+            view.ViewName.Should().Be("CertificatePrintRequest");
+            var model = view.Model.Should().BeOfType<CertificatePrintRequestViewModel>().Subject;
+            model.ReferenceNumber.Should().Be(reference);
+            model.CourseName.Should().Be("Course Z");
+            model.CertificateId.Should().Be(certId);
+            model.FirstName.Should().Be("Sam");
+            model.LastName.Should().Be("Smith");
+            model.Uln.Should().Be(321);
+            model.StandardCode.Should().Be(789);
+        }
+
+        [Test]
+        public async Task CertificatePrintRequest_Get_OrchestratorReturnsNull_RedirectsToSearch()
+        {
+            // Arrange
+            var reference = "REF999";
+
+            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificatePrintRequestViewModel(reference, It.IsAny<string>()))
+                .ReturnsAsync((SFA.DAS.AdminService.Web.ViewModels.DigitalAccess.CertificatePrintRequestViewModel)null);
+
+            // Act
+            var controller = new DigitalAccessController(_httpContextAccessorMock.Object, _digitalAccessOrchestratorMock.Object);
+            var result = await controller.CertificatePrintRequest(reference);
+
+            // Assert
+            var redirect = result.Should().BeOfType<RedirectToRouteResult>().Subject;
+            redirect.RouteName.Should().Be(DigitalAccessController.DigitalAccessReferenceSearchRouteGet);
+        }
+
+        [Test]
+        public async Task DigitalAccessReferenceSearch_Post_OrchestratorReturnsReprint_RedirectsToCertificatePrintRequest()
+        {
+            // Arrange
+            var vm = new DigitalAccessReferenceSearchViewModel { ReferenceNumber = "ABC123" };
+            var resultVm = new DigitalAccessReferenceSearchViewModel
+            {
+                ReferenceNumber = vm.ReferenceNumber,
+                ActionType = ActionType.Reprint
+            };
+
+            _digitalAccessOrchestratorMock.Setup(x => x.GetDigitalAccessReferenceViewModel(vm.ReferenceNumber, It.IsAny<string>()))
+                .ReturnsAsync(resultVm);
+
+            // Act
+            var controller = new DigitalAccessController(_httpContextAccessorMock.Object, _digitalAccessOrchestratorMock.Object);
+            var result = await controller.DigitalAccessReferenceSearch(vm);
+
+            // Assert
+            var redirect = result.Should().BeOfType<RedirectToRouteResult>().Subject;
+            redirect.RouteName.Should().Be(DigitalAccessController.CertificatePrintRequestRouteGet);
+            redirect.RouteValues.Should().ContainKey("referenceNumber");
+            redirect.RouteValues["referenceNumber"].Should().Be(vm.ReferenceNumber);
         }
 
         [Test]

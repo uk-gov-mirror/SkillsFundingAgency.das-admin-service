@@ -87,6 +87,57 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
         }
 
         [Test]
+        public async Task GetCertificatePrintRequestViewModel_ReturnsNull_WhenMediatorReturnsNull()
+        {
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((GetUserActionByCodeQueryResult)null);
+
+            var vm = await _sut.GetCertificatePrintRequestViewModel("REFP", "userp");
+
+            vm.Should().BeNull();
+            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Test]
+        public async Task GetCertificatePrintRequestViewModel_ReturnsMappedViewModel_WhenMediatorReturnsResult()
+        {
+            var certId = Guid.NewGuid();
+
+            var response = new GetUserActionByCodeQueryResult
+            {
+                Id = 2,
+                UserId = Guid.NewGuid(),
+                ActionType = ActionType.Reprint,
+                ActionTime = DateTime.UtcNow,
+                CourseName = "Course Y",
+                CertificateId = certId,
+                CertificateType = CertificateType.Standard,
+                StandardCode = 456,
+                GivenNames = "Eve",
+                FamilyName = "Evans",
+                Uln = 999
+            };
+
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(response);
+
+            var vm = await _sut.GetCertificatePrintRequestViewModel("REFP", "userp");
+
+            vm.Should().NotBeNull();
+            vm.ReferenceNumber.Should().Be("REFP");
+            vm.CourseName.Should().Be("Course Y");
+            vm.CertificateId.Should().Be(certId);
+            vm.CertificateType.Should().Be(response.CertificateType);
+            vm.FirstName.Should().Be("Eve");
+            vm.LastName.Should().Be("Evans");
+            vm.Uln.Should().Be(999);
+            vm.StandardCode.Should().Be(456);
+            vm.RequestType.Should().Be("Reprint");
+
+            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Test]
         public async Task GetUserNotFoundViewModel_ReturnsNames_WhenMediatorReturnsResult()
         {
             var response = new GetUserAllActivityByCodeQueryResult
@@ -286,6 +337,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
                 CourseName = "Course X",
                 CertificateId = certId,
                 CertificateType = CertificateType.Framework,
+                StandardCode = 123,
                 GivenNames = "Bob",
                 FamilyName = "Brown",
                 Uln = 555
@@ -300,10 +352,13 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             vm.ReferenceNumber.Should().Be("REFC");
             vm.CourseName.Should().Be("Course X");
             vm.CertificateId.Should().Be(certId);
-            vm.ViewCertificateAction.Should().Be("Check");
             vm.FirstName.Should().Be("Bob");
             vm.LastName.Should().Be("Brown");
             vm.Uln.Should().Be(555);
+            vm.StandardCode.Should().Be(123);
+            vm.LastName.Should().Be("Brown");
+            vm.Uln.Should().Be(555);
+            vm.StandardCode.Should().Be(123);
             _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
         }
     }

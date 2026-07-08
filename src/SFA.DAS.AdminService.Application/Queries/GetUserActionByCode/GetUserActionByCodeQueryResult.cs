@@ -19,6 +19,7 @@ namespace SFA.DAS.AdminService.Application.Queries.GetUserActionByCode
         public required string GivenNames { get; set; }
         public Guid? CertificateId { get; set; }
         public CertificateType? CertificateType { get; set; }
+        public int? StandardCode { get; set; }
         public string CourseName { get; set; }
         public List<AdminAction> AdminActions { get; set; }
 
@@ -56,6 +57,7 @@ namespace SFA.DAS.AdminService.Application.Queries.GetUserActionByCode
                 GivenNames = source.GivenNames,
                 CertificateId = source.CertificateId,
                 CertificateType = parsedCertificateType,
+                StandardCode = source.StandardCode,
                 CourseName = source.CourseName,
                 AdminActions = source.AdminActions == null ? null : source.AdminActions.Select(a => new AdminAction
                 {

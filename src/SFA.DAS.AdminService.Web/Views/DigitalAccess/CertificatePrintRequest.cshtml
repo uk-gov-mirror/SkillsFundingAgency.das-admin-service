@@ -1,9 +1,9 @@
 ﻿@using SFA.DAS.AdminService.Web.Controllers
 @using SFA.DAS.AdminService.Web.ViewModels.DigitalAccess
 @using SFA.DAS.AdminService.Common.Models
-@model CertificateChangeRequestViewModel
+@model CertificatePrintRequestViewModel
 @{
-    ViewBag.Title = "Request to change certificate details";
+    ViewBag.Title = "Certificate print request";
     Layout = "_Layout";
 }
 
@@ -14,7 +14,7 @@
         <div class="govuk-grid-column-two-thirds digital-access">
             <h1 class="govuk-heading-xl">
                 <span class="govuk-caption-xl">Digital access reference number: @Model.ReferenceNumber</span>
-                Request to change certificate details
+                Certificate print request
             </h1>
             <h2 class="govuk-heading-m">Request details</h2>
             <dl class="govuk-summary-list">
@@ -38,7 +38,7 @@
                         {
                             <a class="govuk-link" asp-controller="Search" asp-action="LearnerDetails" asp-route-stdCode="@Model.StandardCode" asp-route-uln="@Model.Uln">@Model.ViewCertificateText</a>
                         }
-                        else if (Model.CertificateType == CertificateType.Framework && Model.CertificateId != Guid.Empty)
+                        else if (Model.CertificateType == CertificateType.Framework)
                         {
                             <a class="govuk-link" asp-controller="Search" asp-action="FrameworkLearnerDetails" asp-route-frameworkLearnerId="@Model.CertificateId">@Model.ViewCertificateText</a>
                         }
@@ -62,7 +62,7 @@
                 </div>
             </dl>
 
-            <p class="govuk-body"><a asp-route="@DigitalAccessController.DigitalAccessReferenceSearchRouteGet">Search standards and frameworks</a></p>
+            <p class="govuk-body"><a asp-action="Index" asp-controller="Search">Search standards and frameworks</a></p>
 
         </div>
     </div>

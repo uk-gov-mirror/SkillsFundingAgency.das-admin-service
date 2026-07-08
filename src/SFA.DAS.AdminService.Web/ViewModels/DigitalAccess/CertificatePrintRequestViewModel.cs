@@ -3,10 +3,10 @@ using SFA.DAS.AdminService.Common.Models;
 
 namespace SFA.DAS.AdminService.Web.ViewModels.DigitalAccess
 {
-    public class CertificateChangeRequestViewModel
+    public class CertificatePrintRequestViewModel
     {
         public string ReferenceNumber { get; set; } = string.Empty;
-        public string RequestType { get; set; } = "Incorrect certificate details";
+        public string RequestType { get; set; } = "Reprint request";
         public string CourseName { get; set; } = string.Empty;
         public Guid CertificateId { get; set; }
         public CertificateType CertificateType { get; set; }
