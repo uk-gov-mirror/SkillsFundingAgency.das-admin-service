@@ -15,7 +15,7 @@
             <partial name="_FlashMessagePartial" />
 
             <h1 class="govuk-heading-xl">
-                <span class="govuk-caption-xl">Digital access reference number: @Model.ReferenceNumber</span>
+                <span class="govuk-caption-xl">Digital access reference: @Model.ReferenceNumber</span>
                 User access details
             </h1>
 
@@ -65,7 +65,7 @@
                             </div>
                         </div>
                         <p class="govuk-body">Date and time: @item.FormattedActionTime<br />
-                            Reference number: @item.ReferenceNumber
+                            Reference: @item.ReferenceNumber
                         </p>
 
                         @if (item.IsUnlocked)
@@ -128,15 +128,14 @@
             {
                 <h2 class="govuk-heading-m">Restore access</h2>
                 <p><a class="govuk-button govuk-!-margin-bottom-3" asp-route="@DigitalAccessController.RestoreAccessRouteGet" asp-route-referenceNumber="@Model.ReferenceNumber">Restore access to service</a></p>
-                <p class="govuk-body"><a asp-route="@DigitalAccessController.DigitalAccessReferenceSearchRouteGet">Search for another reference number</a><br />
-                <a asp-action="Index" asp-controller="Home">Return to dashboard</a></p>
             }
             else
             {
                 <h2 class="govuk-heading-m">What do you want to do next?</h2>
-                <p class="govuk-body"><a asp-route="@DigitalAccessController.DigitalAccessReferenceSearchRouteGet">Search for another reference number</a><br />
-                <a asp-action="Index" asp-controller="Home">Return to dashboard</a></p>
             }
+
+            <p class="govuk-body"><a asp-route="@DigitalAccessController.DigitalAccessReferenceSearchRouteGet">Search for another reference</a><br />
+            <a asp-action="Index" asp-controller="Home">Return to dashboard</a></p>
 
         </div>
     </div>

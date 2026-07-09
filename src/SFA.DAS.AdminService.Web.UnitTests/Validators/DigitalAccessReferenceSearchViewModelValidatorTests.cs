@@ -21,7 +21,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Validators
         {
             var vm = new DigitalAccessReferenceSearchViewModel { ReferenceNumber = null };
             var result = _validator.TestValidate(vm);
-            result.ShouldHaveValidationErrorFor(x => x.ReferenceNumber).WithErrorMessage("Enter reference number");
+            result.ShouldHaveValidationErrorFor(x => x.ReferenceNumber).WithErrorMessage("Enter reference");
         }
 
         [Test]
@@ -29,7 +29,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Validators
         {
             var vm = new DigitalAccessReferenceSearchViewModel { ReferenceNumber = string.Empty };
             var result = _validator.TestValidate(vm);
-            result.ShouldHaveValidationErrorFor(x => x.ReferenceNumber).WithErrorMessage("Enter reference number");
+            result.ShouldHaveValidationErrorFor(x => x.ReferenceNumber).WithErrorMessage("Enter reference");
         }
 
         [Test]
@@ -37,7 +37,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Validators
         {
             var vm = new DigitalAccessReferenceSearchViewModel { ReferenceNumber = "ABC-123" };
             var result = _validator.TestValidate(vm);
-            result.ShouldHaveValidationErrorFor(x => x.ReferenceNumber).WithErrorMessage("Digital access reference numbers must be alphanumeric");
+            result.ShouldHaveValidationErrorFor(x => x.ReferenceNumber).WithErrorMessage("Digital access reference must be alphanumeric");
         }
 
         [Test]

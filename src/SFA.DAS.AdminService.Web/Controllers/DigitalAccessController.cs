@@ -54,7 +54,7 @@ namespace SFA.DAS.AdminService.Web.Controllers
 
             if (resultVm == null)
             {
-                ModelState.AddModelError("ReferenceNumber", "No records found with this reference number");
+                ModelState.AddModelError("ReferenceNumber", "No records found with this reference");
                 return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);
             }
 
