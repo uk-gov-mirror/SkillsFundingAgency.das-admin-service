@@ -154,5 +154,44 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
                 UserActionId = userActionId
             });
         }
+
+        public async Task<CertificateChangeRequestViewModel> GetCertificateChangeRequestViewModel(string reference, string username)
+        {
+            var ua = await _mediator.Send(new GetUserActionByCodeQuery { Code = reference });
+
+            if (ua == null) return null;
+
+            return new CertificateChangeRequestViewModel
+            {
+                ReferenceNumber = reference,
+                CourseName = ua.CourseName ?? string.Empty,
+                CertificateId = ua.CertificateId ?? throw new InvalidOperationException($"Missing CertificateId for reference {reference}"),
+                CertificateType = ua.CertificateType ?? throw new InvalidOperationException($"Missing CertificateType for reference {reference}"),
+                StandardCode = ua.StandardCode,
+                FirstName = ua.GivenNames,
+                LastName = ua.FamilyName,
+                Uln = ua.Uln
+            };
+        }
+
+        public async Task<CertificatePrintRequestViewModel> GetCertificatePrintRequestViewModel(string reference, string username)
+        {
+            var ua = await _mediator.Send(new GetUserActionByCodeQuery { Code = reference });
+
+            if (ua == null) return null;
+
+            return new CertificatePrintRequestViewModel
+            {
+                ReferenceNumber = reference,
+                RequestType = "Reprint request",
+                CourseName = ua.CourseName ?? string.Empty,
+                CertificateId = ua.CertificateId ?? throw new InvalidOperationException($"Missing CertificateId for reference {reference}"),
+                CertificateType = ua.CertificateType ?? throw new InvalidOperationException($"Missing CertificateType for reference {reference}"),
+                StandardCode = ua.StandardCode,
+                FirstName = ua.GivenNames,
+                LastName = ua.FamilyName,
+                Uln = ua.Uln
+            };
+        }
     }
 }
