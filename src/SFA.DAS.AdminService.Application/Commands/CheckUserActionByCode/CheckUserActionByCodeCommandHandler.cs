@@ -17,16 +17,16 @@ namespace SFA.DAS.AdminService.Application.Commands.CheckUserActionByCode
             _logger = logger;
         }
 
-        public async Task<CheckUserActionByCodeCommandResult> Handle(CheckUserActionByCodeCommand request, CancellationToken cancellationToken)
+        public async Task<CheckUserActionByCodeCommandResult> Handle(CheckUserActionByCodeCommand command, CancellationToken cancellationToken)
         {
             try
             {
-                var response = await _adminOuterApi.CheckUserActionByCode(request.Code, request);
+                var response = await _adminOuterApi.CheckUserActionByCode(command.Code, command);
                 return response;
             }
             catch (System.Exception ex)
             {
-                _logger.LogError(ex, "Error calling Digital Certificates API for code {Code}", request.Code);
+                _logger.LogError(ex, "Error calling Digital Certificates API for code {Code}", command.Code);
                 throw;
             }
         }

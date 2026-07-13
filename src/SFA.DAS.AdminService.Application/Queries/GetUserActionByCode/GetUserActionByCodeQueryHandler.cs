@@ -19,16 +19,16 @@ namespace SFA.DAS.AdminService.Application.Queries.GetUserActionByCode
             _logger = logger;
         }
 
-        public async Task<GetUserActionByCodeQueryResult> Handle(GetUserActionByCodeQuery request, CancellationToken cancellationToken)
+        public async Task<GetUserActionByCodeQueryResult> Handle(GetUserActionByCodeQuery query, CancellationToken cancellationToken)
         {
             try
             {
-                var response = await _adminOuterApi.GetUserActionByCode(request.Code);
+                var response = await _adminOuterApi.GetUserActionByCode(query.Code);
                 return response;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error calling Admin outer API for user action code {Code}", request.Code);
+                _logger.LogError(ex, "Error calling Admin outer API for user action code {Code}", query.Code);
                 throw;
             }
         }

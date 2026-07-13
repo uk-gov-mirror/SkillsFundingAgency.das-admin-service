@@ -8,13 +8,13 @@ namespace SFA.DAS.AdminService.Infrastructure.ApiClients.Admin
 {
     public interface IAdminOuterApi
     {
-        [Post("/users/useractions/{code}/search")]
+        [Post("/user-actions/{code}/search")]
         Task<CheckUserActionByCodeResponse> CheckUserActionByCode([Path] string code, [Body] CheckUserActionByCodeRequest request);
-        [Get("/users/useractions/{code}/all-activity")]
+        [Get("/user-actions/{code}/all-activity")]
         Task<UserAllActivityResponse> GetUserAllActivity([Path] string code);
         [Post("/users/{userId}/unlock")]
         Task UnlockUser([Path] Guid userId, [Body] UnlockUserRequest request);
-        [Get("/users/useractions/{code}")]
+        [Get("/user-actions/{code}")]
         Task<GetUserActionByCodeResponse> GetUserActionByCode([Path] string code);
     }
 }

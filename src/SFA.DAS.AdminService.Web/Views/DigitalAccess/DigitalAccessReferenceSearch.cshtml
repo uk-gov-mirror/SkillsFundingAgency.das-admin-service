@@ -2,7 +2,7 @@
 @using SFA.DAS.AdminService.Web.Controllers
 @model DigitalAccessReferenceSearchViewModel
 @{
-    ViewBag.Title = "Digital access reference number";
+    ViewBag.Title = "Digital access reference";
     Layout = "_Layout";
 }
 
@@ -29,14 +29,14 @@
                 <div class="govuk-form-group" sfa-validation-for="ReferenceNumber" sfa-validationerror-class="govuk-form-group--error">
                     <h1 class="govuk-label-wrapper">
                         <label class="govuk-label govuk-label--xl" for="ReferenceNumber">
-                            Digital access reference number
+                            Digital access reference
                         </label>
                     </h1>
-                    <span class="govuk-hint">Enter reference number for details of apprentice’s online journey</span>
+                    <span class="govuk-hint">Enter reference for details of apprentice’s online journey</span>
                     <span class="govuk-error-message" asp-validation-for="ReferenceNumber"></span>
                     <input class="govuk-input" asp-for="ReferenceNumber" sfa-validation-for="ReferenceNumber" sfa-validationerror-class="govuk-input--error" id="ReferenceNumber" />
                 </div>
-                <button class="govuk-button" type="submit">Search reference number</button>
+                <button class="govuk-button" type="submit">Search reference</button>
             </form>
 
             <p class="govuk-body"><a asp-action="Index" asp-controller="Search">Search standards and frameworks</a></p>

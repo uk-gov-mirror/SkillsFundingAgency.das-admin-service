@@ -17,16 +17,16 @@ namespace SFA.DAS.AdminService.Application.Commands.UnlockUser
             _logger = logger;
         }
 
-        public async Task<Unit> Handle(UnlockUserCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UnlockUserCommand command, CancellationToken cancellationToken)
         {
             try
             {
-                await _adminOuterApi.UnlockUser(request.UserId, request);
+                await _adminOuterApi.UnlockUser(command.UserId, command);
                 return Unit.Value;
             }
             catch (System.Exception ex)
             {
-                _logger.LogError(ex, "Error calling Admin outer API to unlock user {UserId}", request.UserId);
+                _logger.LogError(ex, "Error calling Admin outer API to unlock user {UserId}", command.UserId);
                 throw;
             }
         }

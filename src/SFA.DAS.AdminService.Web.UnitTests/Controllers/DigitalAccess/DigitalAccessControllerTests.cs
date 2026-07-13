@@ -7,18 +7,24 @@ using System;
 using System.Threading.Tasks;
 using SFA.DAS.AdminService.Web.ViewModels.DigitalAccess;
 using SFA.DAS.AdminService.Web.Controllers;
+using SFA.DAS.AdminService.Web.Orchestrators;
 using SFA.DAS.AdminService.Common.Models;
 using System.Security.Claims;
 
-namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.Home
+namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.DigitalAccess
 {
-    // TODO: As part of the cleanup, rename this class. If this file grows larger, split the test cases into multiple test classes.
     [TestFixture]
-    public class DigitalAccessTests : SearchControllerTestsBase
+    public class DigitalAccessControllerTests
     {
+        private Mock<IHttpContextAccessor> _httpContextAccessorMock;
+        private Mock<IDigitalAccessOrchestrator> _digitalAccessOrchestratorMock;
+
         [SetUp]
-        public void SetupDigitalAccessUser()
+        public void Setup()
         {
+            _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            _digitalAccessOrchestratorMock = new Mock<IDigitalAccessOrchestrator>();
+
             var context = new DefaultHttpContext();
             context.User = new ClaimsPrincipal(new ClaimsIdentity(new[]
             {
@@ -156,7 +162,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.Home
             var redirect = result.Should().BeOfType<RedirectToRouteResult>().Subject;
             redirect.RouteName.Should().Be(DigitalAccessController.DigitalAccessReferenceSearchRouteGet);
             controller.ModelState.IsValid.Should().BeFalse();
-            controller.ModelState["ReferenceNumber"].Errors[0].ErrorMessage.Should().Be("No records found with this reference number");
+            controller.ModelState["ReferenceNumber"].Errors[0].ErrorMessage.Should().Be("No records found with this reference");
         }
 
         [Test]

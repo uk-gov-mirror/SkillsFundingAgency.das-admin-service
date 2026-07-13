@@ -11,8 +11,8 @@ namespace SFA.DAS.AdminService.Web.Validators
             RuleFor(x => x.ReferenceNumber)
                 .Cascade(CascadeMode.Stop)
                 .NotEmpty()
-                .WithMessage("Enter reference number")
-                .Matches(new Regex("^[a-zA-Z0-9]+$")).WithMessage("Digital access reference numbers must be alphanumeric");
+                .WithMessage("Enter reference")
+                .Matches(new Regex("^[a-zA-Z0-9]+$")).WithMessage("Digital access reference must be alphanumeric");
         }
     }
 }
