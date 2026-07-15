@@ -191,7 +191,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.DigitalAccess
         }
 
         [Test]
-        public async Task DigitalAccessReferenceSearch_Post_OrchestratorReturnsContact_RedirectsToCertificateChangeRequest()
+        public async Task DigitalAccessReferenceSearch_Post_OrchestratorReturnsContact_ReturnsView()
         {
             // Arrange
             var vm = new DigitalAccessReferenceSearchViewModel { ReferenceNumber = "ABC123" };
@@ -199,6 +199,31 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.DigitalAccess
             {
                 ReferenceNumber = vm.ReferenceNumber,
                 ActionType = ActionType.Contact
+            };
+
+            _digitalAccessOrchestratorMock.Setup(x => x.GetDigitalAccessReferenceViewModel(vm.ReferenceNumber, It.IsAny<string>()))
+                .ReturnsAsync(resultVm);
+
+            // Act
+            var controller = new DigitalAccessController(_httpContextAccessorMock.Object, _digitalAccessOrchestratorMock.Object);
+            var result = await controller.DigitalAccessReferenceSearch(vm);
+
+            // Assert
+            var view = result.Should().BeOfType<ViewResult>().Subject;
+            var model = view.Model.Should().BeOfType<DigitalAccessReferenceSearchViewModel>().Subject;
+            model.ReferenceNumber.Should().Be(vm.ReferenceNumber);
+            model.ActionType.Should().Be(ActionType.Contact);
+        }
+
+        [Test]
+        public async Task DigitalAccessReferenceSearch_Post_OrchestratorReturnsHelp_RedirectsToCertificateChangeRequest()
+        {
+            // Arrange
+            var vm = new DigitalAccessReferenceSearchViewModel { ReferenceNumber = "ABC123" };
+            var resultVm = new DigitalAccessReferenceSearchViewModel
+            {
+                ReferenceNumber = vm.ReferenceNumber,
+                ActionType = ActionType.Help
             };
 
             _digitalAccessOrchestratorMock.Setup(x => x.GetDigitalAccessReferenceViewModel(vm.ReferenceNumber, It.IsAny<string>()))

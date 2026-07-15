@@ -63,9 +63,9 @@ namespace SFA.DAS.AdminService.Web.Controllers
                 case ActionType.Reprint:
                     return RedirectToRoute(CertificatePrintRequestRouteGet, new { referenceNumber = resultVm.ReferenceNumber });
                 case ActionType.Help:
-                    return View(resultVm);
-                case ActionType.Contact:
                     return RedirectToRoute(CertificateChangeRequestRouteGet, new { referenceNumber = resultVm.ReferenceNumber });
+                case ActionType.Contact:
+                    return View(resultVm);
                 case ActionType.NotFound:
                     return RedirectToRoute(UserNotFoundRouteGet, new { referenceNumber = resultVm.ReferenceNumber });
                 case ActionType.NotMatched:
