@@ -38,7 +38,7 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
             return vm;
         }
 
-        public async Task<UserNotFoundViewModel> GetUserNotFoundViewModel(string reference, string username)
+        public async Task<UserNotFoundViewModel> GetUserNotFoundViewModel(string reference)
         {
             var result = await _mediator.Send(new GetUserActionByCodeQuery { Code = reference });
 
@@ -155,7 +155,7 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
             });
         }
 
-        public async Task<CertificateChangeRequestViewModel> GetCertificateChangeRequestViewModel(string reference, string username)
+        public async Task<CertificateChangeRequestViewModel> GetCertificateChangeRequestViewModel(string reference)
         {
             var ua = await _mediator.Send(new GetUserActionByCodeQuery { Code = reference });
 
@@ -190,7 +190,7 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
             };
         }
 
-        public async Task<CertificatePrintRequestViewModel> GetCertificatePrintRequestViewModel(string reference, string username)
+        public async Task<CertificatePrintRequestViewModel> GetCertificatePrintRequestViewModel(string reference)
         {
             var ua = await _mediator.Send(new GetUserActionByCodeQuery { Code = reference });
 

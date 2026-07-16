@@ -80,7 +80,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((GetUserActionByCodeQueryResult)null);
 
-            var vm = await _sut.GetUserNotFoundViewModel("ref3", "user3");
+            var vm = await _sut.GetUserNotFoundViewModel("ref3");
 
             vm.Should().BeNull();
             _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -148,7 +148,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(response);
 
-            Func<Task> act = async () => await _sut.GetCertificateChangeRequestViewModel("REFX", "userx");
+            Func<Task> act = async () => await _sut.GetCertificateChangeRequestViewModel("REFX");
 
             await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("*Missing CertificateId*");
         }
@@ -173,7 +173,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(response);
 
-            Func<Task> act = async () => await _sut.GetCertificateChangeRequestViewModel("REFY", "usery");
+            Func<Task> act = async () => await _sut.GetCertificateChangeRequestViewModel("REFY");
 
             await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("*Missing CertificateType*");
         }
@@ -198,7 +198,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(response);
 
-            Func<Task> act = async () => await _sut.GetCertificatePrintRequestViewModel("REFP", "userp");
+            Func<Task> act = async () => await _sut.GetCertificatePrintRequestViewModel("REFP");
 
             await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("*Missing CertificateId*");
         }
@@ -223,7 +223,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(response);
 
-            Func<Task> act = async () => await _sut.GetCertificatePrintRequestViewModel("REFQ", "userq");
+            Func<Task> act = async () => await _sut.GetCertificatePrintRequestViewModel("REFQ");
 
             await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("*Missing CertificateType*");
         }
@@ -234,7 +234,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((GetUserActionByCodeQueryResult)null);
 
-            var vm = await _sut.GetCertificatePrintRequestViewModel("REFP", "userp");
+            var vm = await _sut.GetCertificatePrintRequestViewModel("REFP");
 
             vm.Should().BeNull();
             _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -263,7 +263,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(response);
 
-            var vm = await _sut.GetCertificatePrintRequestViewModel("REFP", "userp");
+            var vm = await _sut.GetCertificatePrintRequestViewModel("REFP");
 
             vm.Should().NotBeNull();
             vm.ReferenceNumber.Should().Be("REFP");
@@ -313,7 +313,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new GetUserActionByCodeQueryResult { GivenNames = "Diane", FamilyName = "Lockhart" });
 
-            var vm = await _sut.GetUserNotFoundViewModel("ref4", "user4");
+            var vm = await _sut.GetUserNotFoundViewModel("ref4");
 
             vm.Should().NotBeNull();
             vm.ReferenceNumber.Should().Be("ref4");
@@ -459,7 +459,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((GetUserActionByCodeQueryResult)null);
 
-            var vm = await _sut.GetCertificateChangeRequestViewModel("REFX", "userx");
+            var vm = await _sut.GetCertificateChangeRequestViewModel("REFX");
 
             vm.Should().BeNull();
             _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -488,7 +488,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
             _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(response);
 
-            var vm = await _sut.GetCertificateChangeRequestViewModel("REFC", "usery");
+            var vm = await _sut.GetCertificateChangeRequestViewModel("REFC");
 
             vm.Should().NotBeNull();
             vm.ReferenceNumber.Should().Be("REFC");

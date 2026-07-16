@@ -54,7 +54,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.DigitalAccess
                 StandardCode = 789
             };
 
-            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificatePrintRequestViewModel(reference, It.IsAny<string>()))
+            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificatePrintRequestViewModel(reference))
                 .ReturnsAsync(vm);
 
             // Act
@@ -79,7 +79,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.DigitalAccess
             // Arrange
             var reference = "REF999";
 
-            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificatePrintRequestViewModel(reference, It.IsAny<string>()))
+            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificatePrintRequestViewModel(reference))
                 .ReturnsAsync((SFA.DAS.AdminService.Web.ViewModels.DigitalAccess.CertificatePrintRequestViewModel)null);
 
             // Act
@@ -299,7 +299,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.DigitalAccess
                 LastName = "Adams"
             };
 
-            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificateChangeRequestViewModel(reference, It.IsAny<string>()))
+            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificateChangeRequestViewModel(reference))
                 .ReturnsAsync(vm);
 
             // Act
@@ -320,7 +320,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.DigitalAccess
             // Arrange
             var reference = "REF999";
 
-            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificateChangeRequestViewModel(reference, It.IsAny<string>()))
+            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificateChangeRequestViewModel(reference))
                 .ReturnsAsync((CertificateChangeRequestViewModel)null);
 
             // Act
@@ -344,7 +344,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.DigitalAccess
                 LastName = "Adams"
             };
 
-            _digitalAccessOrchestratorMock.Setup(x => x.GetUserNotFoundViewModel(reference, It.IsAny<string>()))
+            _digitalAccessOrchestratorMock.Setup(x => x.GetUserNotFoundViewModel(reference))
                 .ReturnsAsync(vm);
 
             // Act
@@ -365,7 +365,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.DigitalAccess
             // Arrange
             var reference = "REF999";
 
-            _digitalAccessOrchestratorMock.Setup(x => x.GetUserNotFoundViewModel(reference, It.IsAny<string>()))
+            _digitalAccessOrchestratorMock.Setup(x => x.GetUserNotFoundViewModel(reference))
                 .ReturnsAsync((UserNotFoundViewModel)null);
 
             // Act

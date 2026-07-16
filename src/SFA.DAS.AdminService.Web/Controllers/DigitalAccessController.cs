@@ -79,8 +79,7 @@ namespace SFA.DAS.AdminService.Web.Controllers
         [HttpGet("digital-access/reference/{referenceNumber}/not-found", Name = UserNotFoundRouteGet)]
         public async Task<IActionResult> UserNotFound(string referenceNumber)
         {
-            var username = _contextAccessor.HttpContext.User.UserDisplayName();
-            var vm = await _orchestrator.GetUserNotFoundViewModel(referenceNumber, username);
+            var vm = await _orchestrator.GetUserNotFoundViewModel(referenceNumber);
             if (vm == null)
             {
                 return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);
@@ -121,8 +120,7 @@ namespace SFA.DAS.AdminService.Web.Controllers
         [HttpGet("digital-access/reference/{referenceNumber}/certificate-change-request", Name = CertificateChangeRequestRouteGet)]
         public async Task<IActionResult> CertificateChangeRequest(string referenceNumber)
         {
-            var username = _contextAccessor.HttpContext.User.UserId();
-            var vm = await _orchestrator.GetCertificateChangeRequestViewModel(referenceNumber, username);
+            var vm = await _orchestrator.GetCertificateChangeRequestViewModel(referenceNumber);
             if (vm == null)
             {
                 return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);
@@ -146,8 +144,7 @@ namespace SFA.DAS.AdminService.Web.Controllers
         [HttpGet("digital-access/reference/{referenceNumber}/certificate-print-request", Name = CertificatePrintRequestRouteGet)]
         public async Task<IActionResult> CertificatePrintRequest(string referenceNumber)
         {
-            var username = _contextAccessor.HttpContext.User.UserId();
-            var vm = await _orchestrator.GetCertificatePrintRequestViewModel(referenceNumber, username);
+            var vm = await _orchestrator.GetCertificatePrintRequestViewModel(referenceNumber);
             if (vm == null)
             {
                 return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);
@@ -160,7 +157,7 @@ namespace SFA.DAS.AdminService.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RestoreAccessPost(string referenceNumber)
         {
-            var username = _contextAccessor.HttpContext.User.UserId();
+            var username = _contextAccessor.HttpContext.User.UserDisplayName();
             if (string.IsNullOrWhiteSpace(referenceNumber))
             {
                 return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);
