@@ -1,7 +1,6 @@
-﻿@using SFA.DAS.AdminService.Web.Controllers
+@using SFA.DAS.AdminService.Web.Controllers
 @using SFA.DAS.AdminService.Web.ViewModels.DigitalAccess
-@using SFA.DAS.AdminService.Common.Models
-@model CertificateChangeRequestViewModel
+@model NonSpecificContactRequestViewModel
 @{
     ViewBag.Title = "Request to change certificate details";
     Layout = "_Layout";
@@ -28,21 +27,6 @@
                     <dt class="govuk-summary-list__key">Request type</dt>
                     <dd class="govuk-summary-list__value">@Model.RequestType</dd>
                     <dd class="govuk-summary-list__actions"></dd>
-                </div>
-
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">Course</dt>
-                    <dd class="govuk-summary-list__value">@Model.CourseName</dd>
-                    <dd class="govuk-summary-list__actions">
-                        @if (Model.CertificateType == CertificateType.Standard && Model.StandardCode.HasValue && Model.Uln.HasValue)
-                        {
-                            <a class="govuk-link" asp-controller="Search" asp-action="LearnerDetails" asp-route-stdCode="@Model.StandardCode" asp-route-uln="@Model.Uln" asp-route-searchString="@Model.Uln">@Model.ViewCertificateText</a>
-                        }
-                        else if (Model.CertificateType == CertificateType.Framework && Model.CertificateId != Guid.Empty)
-                        {
-                            <a class="govuk-link" asp-controller="Search" asp-action="FrameworkLearnerDetails" asp-route-frameworkLearnerId="@Model.CertificateId">@Model.ViewCertificateText</a>
-                        }
-                    </dd>
                 </div>
             </dl>
             <h2 class="govuk-heading-m">Apprentice details</h2>

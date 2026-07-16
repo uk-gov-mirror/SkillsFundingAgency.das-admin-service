@@ -87,6 +87,48 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Orchestrators
         }
 
         [Test]
+        public async Task GetNonSpecificContactRequestViewModel_ReturnsNull_WhenMediatorReturnsNull()
+        {
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((GetUserActionByCodeQueryResult)null);
+
+            var vm = await _sut.GetNonSpecificContactRequestViewModel("REFN");
+
+            vm.Should().BeNull();
+            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Test]
+        public async Task GetNonSpecificContactRequestViewModel_ReturnsMappedViewModel_WhenMediatorReturnsResult()
+        {
+            var response = new GetUserActionByCodeQueryResult
+            {
+                Id = 3,
+                UserId = Guid.NewGuid(),
+                ActionType = ActionType.Contact,
+                ActionTime = DateTime.UtcNow,
+                GivenNames = "Diane",
+                FamilyName = "Lockhart",
+                Uln = 123456
+            };
+
+
+            _mediatorMock.Setup(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(response);
+
+            var vm = await _sut.GetNonSpecificContactRequestViewModel("REFN");
+
+            vm.Should().NotBeNull();
+            vm.ReferenceNumber.Should().Be("REFN");
+            vm.FirstName.Should().Be("Diane");
+            vm.LastName.Should().Be("Lockhart");
+            vm.Uln.Should().Be(123456);
+            vm.RequestType.Should().Be("Incorrect details");
+
+            _mediatorMock.Verify(m => m.Send(It.IsAny<GetUserActionByCodeQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Test]
         public async Task GetCertificateChangeRequestViewModel_Throws_WhenCertificateIdMissing()
         {
             var response = new GetUserActionByCodeQueryResult

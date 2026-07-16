@@ -23,6 +23,7 @@ namespace SFA.DAS.AdminService.Web.Controllers
         public const string DigitalAccessReferenceSearchRoutePost = nameof(DigitalAccessReferenceSearchRoutePost);
         public const string RestoreAccessRouteGet = nameof(RestoreAccessRouteGet);
         public const string CertificateChangeRequestRouteGet = nameof(CertificateChangeRequestRouteGet);
+        public const string NonSpecificContactRequestRouteGet = nameof(NonSpecificContactRequestRouteGet);
         public const string CertificatePrintRequestRouteGet = nameof(CertificatePrintRequestRouteGet);
         public const string RestoreAccessRoutePost = nameof(RestoreAccessRoutePost);
 
@@ -65,14 +66,14 @@ namespace SFA.DAS.AdminService.Web.Controllers
                 case ActionType.Help:
                     return RedirectToRoute(CertificateChangeRequestRouteGet, new { referenceNumber = resultVm.ReferenceNumber });
                 case ActionType.Contact:
-                    return View(resultVm);
+                    return RedirectToRoute(NonSpecificContactRequestRouteGet, new { referenceNumber = resultVm.ReferenceNumber });
                 case ActionType.NotFound:
                     return RedirectToRoute(UserNotFoundRouteGet, new { referenceNumber = resultVm.ReferenceNumber });
                 case ActionType.NotMatched:
                     return RedirectToRoute(UserNotMatchedRouteGet, new { referenceNumber = resultVm.ReferenceNumber });
             }
 
-            return View(resultVm);
+            return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);
         }
 
         [HttpGet("digital-access/reference/{referenceNumber}/not-found", Name = UserNotFoundRouteGet)]
@@ -122,6 +123,18 @@ namespace SFA.DAS.AdminService.Web.Controllers
         {
             var username = _contextAccessor.HttpContext.User.UserId();
             var vm = await _orchestrator.GetCertificateChangeRequestViewModel(referenceNumber, username);
+            if (vm == null)
+            {
+                return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);
+            }
+
+            return View(vm);
+        }
+
+        [HttpGet("digital-access/reference/{referenceNumber}/non-specific-contact-request", Name = NonSpecificContactRequestRouteGet)]
+        public async Task<IActionResult> NonSpecificContactRequest(string referenceNumber)
+        {
+            var vm = await _orchestrator.GetNonSpecificContactRequestViewModel(referenceNumber);
             if (vm == null)
             {
                 return RedirectToRoute(DigitalAccessReferenceSearchRouteGet);
