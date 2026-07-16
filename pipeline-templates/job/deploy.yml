@@ -23,6 +23,7 @@ jobs:
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             SubscriptionId: $(SubscriptionId)
+            PipelineVariableName: AdminApimSubscriptionKey
             Location: $(ResourceGroupLocation)
             Environment: ${{ parameters.Environment }}
             TemplatePath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}/azure/template.json
@@ -41,6 +42,7 @@ jobs:
             TargetFileName: '*.schema.json'
             TableName: Configuration
             ConfigurationSecrets:
+              AdminApimSubscriptionKey: $(AdminApimSubscriptionKey)
               DefaultSessionRedisConnectionString: $(DefaultSessionRedisConnectionString)
               AzureApiAuthenticationKey: $(AzureApiAuthenticationKey)
         - template: azure-pipelines-templates/deploy/step/app-role-assignments.yml@das-platform-building-blocks
