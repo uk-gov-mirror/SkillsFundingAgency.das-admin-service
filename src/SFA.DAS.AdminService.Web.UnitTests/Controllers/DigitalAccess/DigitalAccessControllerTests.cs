@@ -54,7 +54,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.DigitalAccess
                 StandardCode = 789
             };
 
-            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificatePrintRequestViewModel(reference, It.IsAny<string>()))
+            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificatePrintRequestViewModel(reference))
                 .ReturnsAsync(vm);
 
             // Act
@@ -79,7 +79,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.DigitalAccess
             // Arrange
             var reference = "REF999";
 
-            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificatePrintRequestViewModel(reference, It.IsAny<string>()))
+            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificatePrintRequestViewModel(reference))
                 .ReturnsAsync((SFA.DAS.AdminService.Web.ViewModels.DigitalAccess.CertificatePrintRequestViewModel)null);
 
             // Act
@@ -191,7 +191,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.DigitalAccess
         }
 
         [Test]
-        public async Task DigitalAccessReferenceSearch_Post_OrchestratorReturnsContact_ReturnsView()
+        public async Task DigitalAccessReferenceSearch_Post_OrchestratorReturnsContact_RedirectsToNonSpecificContactRequest()
         {
             // Arrange
             var vm = new DigitalAccessReferenceSearchViewModel { ReferenceNumber = "ABC123" };
@@ -209,10 +209,57 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.DigitalAccess
             var result = await controller.DigitalAccessReferenceSearch(vm);
 
             // Assert
+            var redirect = result.Should().BeOfType<RedirectToRouteResult>().Subject;
+            redirect.RouteName.Should().Be(DigitalAccessController.NonSpecificContactRequestRouteGet);
+            redirect.RouteValues.Should().ContainKey("referenceNumber");
+            redirect.RouteValues["referenceNumber"].Should().Be(vm.ReferenceNumber);
+        }
+
+        [Test]
+        public async Task NonSpecificContactRequest_Get_OrchestratorReturnsViewModel_ReturnsViewWithModel()
+        {
+            // Arrange
+            var reference = "REF123";
+            var vm = new NonSpecificContactRequestViewModel
+            {
+                ReferenceNumber = reference,
+                FirstName = "Diane",
+                LastName = "Lockhart",
+                Uln = 123456
+            };
+
+            _digitalAccessOrchestratorMock.Setup(x => x.GetNonSpecificContactRequestViewModel(reference))
+                .ReturnsAsync(vm);
+
+            // Act
+            var controller = new DigitalAccessController(_httpContextAccessorMock.Object, _digitalAccessOrchestratorMock.Object);
+            var result = await controller.NonSpecificContactRequest(reference);
+
+            // Assert
             var view = result.Should().BeOfType<ViewResult>().Subject;
-            var model = view.Model.Should().BeOfType<DigitalAccessReferenceSearchViewModel>().Subject;
-            model.ReferenceNumber.Should().Be(vm.ReferenceNumber);
-            model.ActionType.Should().Be(ActionType.Contact);
+            var model = view.Model.Should().BeOfType<NonSpecificContactRequestViewModel>().Subject;
+            model.ReferenceNumber.Should().Be(reference);
+            model.FirstName.Should().Be("Diane");
+            model.LastName.Should().Be("Lockhart");
+            model.Uln.Should().Be(123456);
+        }
+
+        [Test]
+        public async Task NonSpecificContactRequest_Get_OrchestratorReturnsNull_RedirectsToSearch()
+        {
+            // Arrange
+            var reference = "REF999";
+
+            _digitalAccessOrchestratorMock.Setup(x => x.GetNonSpecificContactRequestViewModel(reference))
+                .ReturnsAsync((NonSpecificContactRequestViewModel)null);
+
+            // Act
+            var controller = new DigitalAccessController(_httpContextAccessorMock.Object, _digitalAccessOrchestratorMock.Object);
+            var result = await controller.NonSpecificContactRequest(reference);
+
+            // Assert
+            var redirect = result.Should().BeOfType<RedirectToRouteResult>().Subject;
+            redirect.RouteName.Should().Be(DigitalAccessController.DigitalAccessReferenceSearchRouteGet);
         }
 
         [Test]
@@ -252,7 +299,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.DigitalAccess
                 LastName = "Adams"
             };
 
-            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificateChangeRequestViewModel(reference, It.IsAny<string>()))
+            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificateChangeRequestViewModel(reference))
                 .ReturnsAsync(vm);
 
             // Act
@@ -273,7 +320,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.DigitalAccess
             // Arrange
             var reference = "REF999";
 
-            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificateChangeRequestViewModel(reference, It.IsAny<string>()))
+            _digitalAccessOrchestratorMock.Setup(x => x.GetCertificateChangeRequestViewModel(reference))
                 .ReturnsAsync((CertificateChangeRequestViewModel)null);
 
             // Act
@@ -297,7 +344,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.DigitalAccess
                 LastName = "Adams"
             };
 
-            _digitalAccessOrchestratorMock.Setup(x => x.GetUserNotFoundViewModel(reference, It.IsAny<string>()))
+            _digitalAccessOrchestratorMock.Setup(x => x.GetUserNotFoundViewModel(reference))
                 .ReturnsAsync(vm);
 
             // Act
@@ -318,7 +365,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.DigitalAccess
             // Arrange
             var reference = "REF999";
 
-            _digitalAccessOrchestratorMock.Setup(x => x.GetUserNotFoundViewModel(reference, It.IsAny<string>()))
+            _digitalAccessOrchestratorMock.Setup(x => x.GetUserNotFoundViewModel(reference))
                 .ReturnsAsync((UserNotFoundViewModel)null);
 
             // Act

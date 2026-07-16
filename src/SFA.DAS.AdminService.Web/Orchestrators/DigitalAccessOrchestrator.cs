@@ -38,7 +38,7 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
             return vm;
         }
 
-        public async Task<UserNotFoundViewModel> GetUserNotFoundViewModel(string reference, string username)
+        public async Task<UserNotFoundViewModel> GetUserNotFoundViewModel(string reference)
         {
             var result = await _mediator.Send(new GetUserActionByCodeQuery { Code = reference });
 
@@ -155,7 +155,7 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
             });
         }
 
-        public async Task<CertificateChangeRequestViewModel> GetCertificateChangeRequestViewModel(string reference, string username)
+        public async Task<CertificateChangeRequestViewModel> GetCertificateChangeRequestViewModel(string reference)
         {
             var ua = await _mediator.Send(new GetUserActionByCodeQuery { Code = reference });
 
@@ -174,7 +174,23 @@ namespace SFA.DAS.AdminService.Web.Orchestrators
             };
         }
 
-        public async Task<CertificatePrintRequestViewModel> GetCertificatePrintRequestViewModel(string reference, string username)
+        public async Task<NonSpecificContactRequestViewModel> GetNonSpecificContactRequestViewModel(string reference)
+        {
+            var ua = await _mediator.Send(new GetUserActionByCodeQuery { Code = reference });
+
+            if (ua == null) return null;
+
+            return new NonSpecificContactRequestViewModel
+            {
+                ReferenceNumber = reference,
+                RequestType = "Incorrect details",
+                FirstName = ua.GivenNames,
+                LastName = ua.FamilyName,
+                Uln = ua.Uln
+            };
+        }
+
+        public async Task<CertificatePrintRequestViewModel> GetCertificatePrintRequestViewModel(string reference)
         {
             var ua = await _mediator.Send(new GetUserActionByCodeQuery { Code = reference });
 
