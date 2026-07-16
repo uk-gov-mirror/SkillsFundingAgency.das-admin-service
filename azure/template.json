@@ -20,6 +20,12 @@
         "sharedKeyVaultName": {
             "type": "string"
         },
+        "sharedApimName": {
+            "type": "string"
+        },
+        "sharedApimResourceGroup": {
+            "type": "string"
+        },
         "sharedManagementResourceGroup": {
             "type": "string"
         },
