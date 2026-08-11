@@ -1,0 +1,91 @@
+﻿@using SFA.DAS.AdminService.Web.Extensions
+
+@if (TempData.ContainsKey(TempDataDictionaryExtensions.FlashMessageBodyTempDataKey))
+{
+    var body = TempData[TempDataDictionaryExtensions.FlashMessageBodyTempDataKey]?.ToString();
+    var detail = TempData[TempDataDictionaryExtensions.FlashMessageTempDetailKey]?.ToString();
+    var title = TempData[TempDataDictionaryExtensions.FlashMessageTitleTempDataKey]?.ToString();
+
+    var level = TempDataDictionaryExtensions.FlashMessageLevel.Success;
+
+    if (TempData.TryGetValue(TempDataDictionaryExtensions.FlashMessageLevelTempDataKey, out var levelObj)
+        && Enum.TryParse(levelObj?.ToString(), ignoreCase: true, out TempDataDictionaryExtensions.FlashMessageLevel parsed))
+    {
+        level = parsed;
+    }
+
+
+
+    @if (level == TempDataDictionaryExtensions.FlashMessageLevel.Info)
+    {
+        <div class="govuk-grid-column-full das-notification govuk-!-margin-bottom-4 das-notification--info" tabindex="-1">
+            <h3 class="das-notification__heading">@body</h3>
+            <div class="govuk-panel__body">
+                @detail
+            </div>
+        </div>
+    }
+    @if (level == TempDataDictionaryExtensions.FlashMessageLevel.Success)
+    {
+        @if (string.IsNullOrWhiteSpace(title))
+        {
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-full">
+                    <div class="govuk-!-margin-bottom-4 govuk-panel govuk-panel--confirmation">
+                        <h1 class="govuk-panel__title">
+                            @body
+                        </h1>
+                        <div class="govuk-panel__body">
+                            @detail
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-full">
+                    <div class="govuk-!-margin-bottom-4 govuk-notification-banner govuk-notification-banner--success">
+                        <div class="govuk-notification-banner__header">
+                            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                                @title
+                            </h2>
+                        </div>
+                        <div class="govuk-notification-banner__content">
+                            <h3 class="govuk-notification-banner__heading">
+                                @body
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    @if (level == TempDataDictionaryExtensions.FlashMessageLevel.Warning)
+    {
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <div class="das-notification das-notification--warning govuk-!-margin-bottom-4" tabindex="-1">
+                    <h3 class="das-notification__heading">Important</h3>
+                    <div class="das-notification__body">
+                        @if (!string.IsNullOrWhiteSpace(title))
+                        {
+                            <p class="govuk-body govuk-!-font-weight-bold">@title</p>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(body))
+                        {
+                            <p class="govuk-body">@body</p>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(detail))
+                        {
+                            <p class="govuk-body">@detail</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

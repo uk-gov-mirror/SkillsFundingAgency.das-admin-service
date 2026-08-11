@@ -1,0 +1,36 @@
+﻿@using SFA.DAS.AdminService.Web.Controllers
+@using SFA.DAS.AdminService.Web.ViewModels.DigitalAccess
+@model RestoreAccessViewModel
+@{
+    ViewBag.Title = "Restore access to service";
+    Layout = "_Layout";
+}
+
+<a asp-route="@DigitalAccessController.UserNotMatchedRouteGet" asp-route-referenceNumber="@Model.ReferenceNumber" class="govuk-back-link">Back</a>
+
+<main class="govuk-main-wrapper " id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds digital-access">
+
+            <partial name="_FlashMessagePartial" />
+
+            <h1 class="govuk-heading-xl">
+                <span class="govuk-caption-xl">Digital access reference: @Model.ReferenceNumber</span>
+                Restore access to service
+            </h1>
+
+            <p class="govuk-body">Before restoring access, you must investigate:</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>apprentice details</li>
+                <li>digital access history</li>
+            </ul>
+
+            <p class="govuk-body">Tier 2 can restore access to the Apprenticeship certificate service.</p>
+
+            <form asp-route="@DigitalAccessController.RestoreAccessRoutePost" method="post">
+                <button class="govuk-button" type="submit" data-module="govuk-button" data-prevent-double-click="true">Restore user access</button>
+            </form>
+
+        </div>
+    </div>
+</main>

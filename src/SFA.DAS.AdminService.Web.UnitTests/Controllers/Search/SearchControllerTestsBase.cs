@@ -11,6 +11,8 @@ using SFA.DAS.AdminService.Web.ViewModels.Search;
 using SFA.DAS.AdminService.Web.Models.Search;
 using Microsoft.AspNetCore.Http;
 using SFA.DAS.AdminService.Web.Infrastructure;
+using SFA.DAS.AdminService.Web.Orchestrators;
+using System.Security.Claims;
 
 namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.Home
 {
@@ -26,6 +28,7 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.Home
         protected Mock<IScheduleApiClient> _scheduleApiClientMock;
         protected Mock<IMapper> _mapperMock;
         protected Mock<IHttpContextAccessor> _httpContextAccessorMock;
+        protected Mock<IDigitalAccessOrchestrator> _digitalAccessOrchestratorMock;
 
         [SetUp]
         public void SetupBase()
@@ -38,6 +41,11 @@ namespace SFA.DAS.AdminService.Web.UnitTests.Controllers.Home
             _scheduleApiClientMock = new Mock<IScheduleApiClient>();
             _mapperMock = new Mock<IMapper>();
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            _digitalAccessOrchestratorMock = new Mock<IDigitalAccessOrchestrator>();
+            var context = new DefaultHttpContext();
+            context.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn", "test@user") }));
+            _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(context);
+
             _controller = new SearchController(_learnerDetailsApiClientMock.Object, 
                 _registerApiClientMock.Object, 
                 _staffSearchApiClientMock.Object,
